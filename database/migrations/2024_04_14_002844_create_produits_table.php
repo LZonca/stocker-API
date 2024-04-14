@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('prix')->nullable();
             $table->integer('quantite')->default(0);
             $table->string('image');
-            $table->foreignId('categorie_id')->constrained();
+            $table->foreignId('categorie_id')->nullable()->constrained();
             $table->timestamps();
         });
     }

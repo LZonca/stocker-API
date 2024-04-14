@@ -45,6 +45,11 @@ class User extends Authenticatable
         ];
     }
 
+    public function stocks()
+    {
+        return $this->hasMany(Stock::class, 'proprietaire_id');
+    }
+
     public function groupes()
     {
         return $this->belongsToMany(Groupe::class, 'user_belongs_to_groupe');
