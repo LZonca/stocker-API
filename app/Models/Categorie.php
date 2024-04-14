@@ -14,4 +14,9 @@ class Categorie extends Model
     {
         return $this->hasMany(Produit::class);
     }
+
+    public function stocks()
+    {
+        return $this->belongsToMany(Stock::class, 'categorie_stock');
+    }
 }

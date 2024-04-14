@@ -14,9 +14,6 @@ class GroupesTableSeeder extends Seeder
      */
     public function run()
     {
-        Groupe::create([
-            'nom' => 'Test Groupe',
-            'proprietaire_id' => 1, // assuming a user with id 1 exists
-        ]);
+        Groupe::factory(10)->create();
     }
 }
