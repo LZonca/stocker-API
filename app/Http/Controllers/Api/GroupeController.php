@@ -13,7 +13,7 @@ class GroupeController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(Groupe::all());
     }
 
     /**
@@ -21,7 +21,8 @@ class GroupeController extends Controller
      */
     public function create()
     {
-        //
+        // This method is typically used in web applications to show a form for creating a new resource.
+        // Since this is an API, you might not need this method.
     }
 
     /**
@@ -29,7 +30,8 @@ class GroupeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $groupe = Groupe::create($request->all());
+        return response()->json($groupe, 201);
     }
 
     /**
@@ -37,7 +39,7 @@ class GroupeController extends Controller
      */
     public function show(Groupe $groupe)
     {
-        //
+        return response()->json($groupe);
     }
 
     /**
@@ -45,7 +47,8 @@ class GroupeController extends Controller
      */
     public function edit(Groupe $groupe)
     {
-        //
+        // This method is typically used in web applications to show a form for editing an existing resource.
+        // Since this is an API, you might not need this method.
     }
 
     /**
@@ -53,7 +56,8 @@ class GroupeController extends Controller
      */
     public function update(Request $request, Groupe $groupe)
     {
-        //
+        $groupe->update($request->all());
+        return response()->json($groupe);
     }
 
     /**
@@ -61,6 +65,12 @@ class GroupeController extends Controller
      */
     public function destroy(Groupe $groupe)
     {
-        //
+        $groupe->delete();
+        return response()->json(null, 204);
+    }
+
+    public function users(Groupe $groupe)
+    {
+        return response()->json($groupe->users);
     }
 }

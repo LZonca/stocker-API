@@ -21,9 +21,12 @@ class ProduitStockTableSeeder extends Seeder
 
         // For each product, attach random stocks
         foreach ($produits as $produit) {
-            $produit->stocks()->attach(
-                $stocks->random(rand(1, 3))->pluck('id')->toArray()
-            );
+            $attachedStocks = $stocks->random(rand(1, 3))->pluck('id')->toArray();
+
+            foreach ($attachedStocks as $stockId) {
+                // Attach the stock to the product and set a random quantity
+                $produit->stocks()->attach($stockId, ['quantite' => rand(1, 10)]);
+            }
         }
     }
 }

@@ -17,6 +17,7 @@ class CreateProduitStockTable extends Migration
             $table->id();
             $table->foreignId('produit_id')->constrained()->onDelete('cascade');
             $table->foreignId('stock_id')->constrained()->onDelete('cascade');
+            $table->integer('quantite')->default(0);
             $table->timestamps();
         });
     }

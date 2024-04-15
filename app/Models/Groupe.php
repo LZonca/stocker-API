@@ -11,8 +11,17 @@ class Groupe extends Model
 
     protected $fillable = ['nom', 'image', 'proprietaire_id'];
 
-    public function groupes()
+    public function users()
     {
-        return $this->belongsToMany(Groupe::class, 'user_groupes');
+        return $this->belongsToMany(User::class, 'user_belongs_to_groupe');
+    }
+    public function stocks()
+    {
+        return $this->belongsToMany(Stock::class);
+    }
+
+    public function proprietaire()
+    {
+        return $this->belongsTo(User::class, 'proprietaire_id');
     }
 }

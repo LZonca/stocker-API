@@ -23,4 +23,9 @@ class Stock extends Model
     {
         return $this->belongsTo(User::class, 'proprietaire_id');
     }
+
+    public function stocks()
+    {
+        return $this->belongsToMany(Stock::class);
+    }
 }

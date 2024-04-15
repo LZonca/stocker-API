@@ -7,6 +7,7 @@ use App\Models\Produit;
 use App\Models\Stock;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class StockController extends Controller
 {
@@ -71,20 +72,29 @@ class StockController extends Controller
     public function addProduct(User $user, Stock $stock, Request $request)
     {
         $stock = $user->stocks->find($stock->id);
-        $product = Produit::find($request->id);
+
+        // Check if the stock exists
+        if (!$stock) {
+            return response()->json(['message' => 'Stock not found.'], 404);
+        }
+
+        $product = Produit::where('code', $request->code)->first();
 
         if (!$product) {
             // The product is not found, create it
             $product = Produit::create($request->all());
         }
 
-        if ($stock->produits->contains($product->id)) {
+        // Check if the product's code is already in the stock
+        $pivot = $stock->produits()->where('code', $product->code)->first();
+
+        if ($pivot) {
             // The product is already in the stock, increment the quantity
-            $stock->produits()->updateExistingPivot($product->id, ['quantity' => $product->quantite + 1]);
+            $stock->produits()->updateExistingPivot($product->id, ['quantite' => DB::raw('quantite + 1')]);
             return response()->json(['message' => 'Product quantity incremented.'], 200);
         } else {
             // The product is not in the stock, add it
-            $stock->produits()->attach($product->id);
+            $stock->produits()->attach($product->id, ['quantite' => 1]);
             return response()->json(['message' => 'Product added to stock successfully.'], 200);
         }
     }

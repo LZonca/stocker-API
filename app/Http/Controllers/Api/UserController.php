@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Groupe;
 use App\Models\Stock;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -44,7 +45,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return response()->json($user->load('stocks.produits'));
+        return response()->json($user->load('stocks.produits', 'groupes'));
     }
 
 
@@ -76,6 +77,19 @@ class UserController extends Controller
         $user->delete();
 
         return response()->json(null, 204);
+    }
+
+    public function associateUser(User $user, Groupe $group)
+    {
+        // Check if the user is already associated with the group
+        if ($user->groupes()->where('groupe_id', $group->id)->exists()) {
+            return response()->json(['message' => 'User is already associated with this group.'], 409);
+        }
+
+        // Associate the user with the group
+        $user->groupes()->attach($group);
+
+        return response()->json(['message' => 'User associated with the group successfully.'], 200);
     }
 
 /*    /**

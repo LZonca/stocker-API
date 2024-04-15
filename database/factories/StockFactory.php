@@ -39,6 +39,7 @@ class StockFactory extends Factory
             $produits = Produit::all();
             $stock->produits()->attach(
                 $produits->random(rand(1, 3))->pluck('id')->toArray()
+
             );
         });
     }
