@@ -79,19 +79,10 @@ class UserController extends Controller
         return response()->json(null, 204);
     }
 
-    public function associateUser(User $user, Groupe $group)
+    public function groups(User $user)
     {
-        // Check if the user is already associated with the group
-        if ($user->groupes()->where('groupe_id', $group->id)->exists()) {
-            return response()->json(['message' => 'User is already associated with this group.'], 409);
-        }
-
-        // Associate the user with the group
-        $user->groupes()->attach($group);
-
-        return response()->json(['message' => 'User associated with the group successfully.'], 200);
+        return response()->json($user->groupes);
     }
-
 
     function login(Request $request)
     {
@@ -107,7 +98,7 @@ class UserController extends Controller
             ], 404);
         }
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (!Hash::check($request->password, $user->password)) {
             return response([
                 'message' => ['These credentials do not match our records.']
             ], 404);

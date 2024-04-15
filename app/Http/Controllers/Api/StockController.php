@@ -99,11 +99,72 @@ class StockController extends Controller
         }
     }
 
+    public function decreaseProductQuantityInUserStock(User $user, Stock $stock, Produit $product)
+    {
+        $stock = $user->stocks->find($stock->id);
+
+        // Check if the stock exists
+        if (!$stock) {
+            return response()->json(['message' => 'Stock not found.'], 404);
+        }
+
+        // Check if the product is in the stock
+        $pivot = $stock->produits()->where('produit_id', $product->id)->first();
+
+        if (!$pivot) {
+            return response()->json(['message' => 'Product not found in the stock.'], 404);
+        }
+
+        // Check if the product quantity is greater than 1
+        if ($pivot->quantite > 1) {
+            $stock->produits()->updateExistingPivot($product->id, ['quantite' => DB::raw('quantite - 1')]);
+            return response()->json(['message' => 'Product quantity decremented.'], 200);
+        } else {
+            $stock->produits()->detach($product->id);
+            return response()->json(['message' => 'Product removed from stock successfully.'], 200);
+        }
+    }
+
+    public function removeProductFromUserStock(User $user, Stock $stock, Produit $product)
+    {
+        $stock = $user->stocks->find($stock->id);
+
+        // Check if the stock exists
+        if (!$stock) {
+            return response()->json(['message' => 'Stock not found.'], 404);
+        }
+
+        // Check if the product is in the stock
+        $pivot = $stock->produits()->where('produit_id', $product->id)->first();
+
+        if (!$pivot) {
+            return response()->json(['message' => 'Product not found in the stock.'], 404);
+        }
+
+        $stock->produits()->detach($product->id);
+
+        return response()->json(['message' => 'Product removed from stock successfully.'], 200);
+    }
+
     /**
      * Display the products of a user's stock.
      */
     public function content(User $user, Stock $stock)
     {
-        return response()->json($user->stocks->find($stock->id)->produits);
+        $stock = $user->stocks->find($stock->id);
+        $products = $stock->produits->map(function ($product) {
+            return [
+                'id' => $product->id,
+                'code' => $product->code,
+                'nom' => $product->nom,
+                'description' => $product->description,
+                'prix' => $product->prix,
+                'image' => $product->image,
+                'categorie_id' => $product->categorie_id,
+                'quantite' => $product->pivot->quantite,
+            ];
+        });
+
+        return response()->json($products);
     }
 }

@@ -17,7 +17,7 @@ class Groupe extends Model
     }
     public function stocks()
     {
-        return $this->belongsToMany(Stock::class);
+        return $this->hasMany(Stock::class);
     }
 
     public function proprietaire()

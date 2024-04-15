@@ -9,19 +9,24 @@ class Stock extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nom', 'proprietaire_id'];
+    protected $fillable = ['nom', 'proprietaire_id', 'groupe_id'];
 
     // Hide pivot attribute
     protected $hidden = ['pivot'];
 
     public function produits()
     {
-        return $this->belongsToMany(Produit::class, 'produit_stock');
+        return $this->belongsToMany(Produit::class)->withPivot('quantite');
     }
 
     public function proprietaire()
     {
         return $this->belongsTo(User::class, 'proprietaire_id');
+    }
+
+    public function groupe()
+    {
+        return $this->belongsTo(Groupe::class);
     }
 
     public function stocks()
