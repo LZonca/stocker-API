@@ -92,6 +92,36 @@ class UserController extends Controller
         return response()->json(['message' => 'User associated with the group successfully.'], 200);
     }
 
+
+    function login(Request $request)
+    {
+        $user= User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response([
+                'message' => ['No user found with email: ' . $request->email]
+            ], 404);
+        } else if (!Hash::check($request->password, $user->password)) {
+            return response([
+            'message' => ['Password does not match for user: ' . $request->email]
+            ], 404);
+        }
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response([
+                'message' => ['These credentials do not match our records.']
+            ], 404);
+        }
+
+        $token = $user->createToken('api-token')->plainTextToken;
+
+        $response = [
+            'user' => $user,
+            'token' => $token
+        ];
+
+        return response($response, 201);
+    }
 /*    /**
      * Display the stocks of every user.
      */
