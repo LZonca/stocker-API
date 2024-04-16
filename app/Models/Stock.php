@@ -9,7 +9,7 @@ class Stock extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nom', 'proprietaire_id', 'groupe_id'];
+    protected $fillable = ['nom', 'image','proprietaire_id', 'groupe_id'];
 
     // Hide pivot attribute
     protected $hidden = ['pivot'];

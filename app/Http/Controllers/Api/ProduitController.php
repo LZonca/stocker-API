@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Produit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ProduitController extends Controller
 {
@@ -21,6 +22,20 @@ class ProduitController extends Controller
      */
     public function store(Request $request)
     {
+
+        $validator = Validator::make($request->all(), [
+            'code' => 'nullable|unique:produits|max:255',
+            'nom' => 'required|max:255',
+            'description' => 'nullable|string',
+            'prix' => 'nullable|numeric',
+            'image' => 'nullable|image',
+            'categorie_id' => 'nullable|exists:categories,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
         $produit = new Produit;
         $produit->fill($request->all());
         $produit->save();
@@ -41,6 +56,19 @@ class ProduitController extends Controller
      */
     public function update(Request $request, Produit $produit)
     {
+        $validator = Validator::make($request->all(), [
+            'code' => 'nullable|unique:produits|max:255',
+            'nom' => 'required|max:255',
+            'description' => 'nullable|string',
+            'prix' => 'nullable|numeric',
+            'image' => 'nullable|image',
+            'categorie_id' => 'nullable|exists:categories,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
         $produit->fill($request->all());
         $produit->save();
 

@@ -8,6 +8,7 @@ use App\Models\Stock;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -24,11 +25,15 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:8',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
 
         $user = User::create([
             'name' => $request->name,
@@ -36,7 +41,13 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return response()->json($user, 201);
+        // Create a token for the user
+        $token = $user->createToken('api-token')->plainTextToken;
+
+        return response()->json([
+            'user' => $user,
+            'token' => $token
+        ], 201);
     }
 
 
@@ -54,11 +65,15 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+            'email' => 'required|email|unique:users',
             'password' => 'required|min:8',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
 
         $user->update([
             'name' => $request->name,
@@ -86,6 +101,7 @@ class UserController extends Controller
 
     function login(Request $request)
     {
+
         $user= User::where('email', $request->email)->first();
 
         if (!$user) {

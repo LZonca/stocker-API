@@ -8,6 +8,7 @@ use App\Models\Stock;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class StockController extends Controller
 {
@@ -24,9 +25,14 @@ class StockController extends Controller
      */
     public function store(Request $request, User $user)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'nom' => 'required|max:255',
+            'image' => 'nullable|image',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
 
         $stock = new Stock($request->all());
         $stock->proprietaire()->associate($user);
@@ -48,9 +54,16 @@ class StockController extends Controller
      */
     public function update(Request $request, User $user, Stock $stock)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'nom' => 'required|max:255',
+            'image' => 'nullable|image',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+
 
         $stock = $user->stocks->find($stock->id);
         $stock->update($request->all());
@@ -71,7 +84,19 @@ class StockController extends Controller
 
     public function addProduct(User $user, Stock $stock, Request $request)
     {
+
+        $validator = Validator::make($request->all(), [
+            'code' => 'required',
+            'nom' => 'required', // Ensure that 'nom' is always provided
+            // Add other validation rules as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
         $stock = $user->stocks->find($stock->id);
+
 
         // Check if the stock exists
         if (!$stock) {

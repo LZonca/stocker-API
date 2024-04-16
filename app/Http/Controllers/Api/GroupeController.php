@@ -9,6 +9,7 @@ use App\Models\Stock;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class GroupeController extends Controller
 {
@@ -34,7 +35,20 @@ class GroupeController extends Controller
      */
     public function store(Request $request)
     {
-        $groupe = Groupe::create($request->all());
+
+        $validator = Validator::make($request->all(), [
+            'nom' => 'required|unique:groupes|max:255',
+            'image' => 'nullable|image',
+            'proprietaire_id' => 'required|exists:users,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $groupe = new Groupe;
+        $groupe->fill($request->all());
+        $groupe->save();
 
         // Associate the user with the group
         $user = User::find($request->proprietaire_id);
@@ -65,6 +79,16 @@ class GroupeController extends Controller
      */
     public function update(Request $request, Groupe $groupe)
     {
+        $validator = Validator::make($request->all(), [
+            'nom' => 'required|unique:groupes|max:255',
+            'image' => 'nullable|image',
+            'proprietaire_id' => 'required|exists:users,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
         $groupe->update($request->all());
         return response()->json($groupe);
     }
@@ -137,6 +161,17 @@ class GroupeController extends Controller
 
     public function addProduct(Groupe $groupe, Stock $stock, Request $request)
     {
+
+        $validator = Validator::make($request->all(), [
+            'code' => 'required',
+            'nom' => 'required', // Ensure that 'nom' is always provided
+            // Add other validation rules as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
         $stock = $groupe->stocks->find($stock->id);
 
         // Check if the stock exists

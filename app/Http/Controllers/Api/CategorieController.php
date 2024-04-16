@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Categorie;
+use App\Models\Produit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CategorieController extends Controller
 {
@@ -13,15 +15,7 @@ class CategorieController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return response()->json(Categorie::all());
     }
 
     /**
@@ -29,7 +23,21 @@ class CategorieController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'nom' => 'required|unique:categories|max:255',
+            'description' => 'nullable|string',
+            'image' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $categorie = new Categorie;
+        $categorie->fill($request->all());
+        $categorie->save();
+
+        return response()->json($categorie, 201);
     }
 
     /**
@@ -37,15 +45,7 @@ class CategorieController extends Controller
      */
     public function show(Categorie $categorie)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Categorie $categorie)
-    {
-        //
+        return response()->json($categorie);
     }
 
     /**
@@ -53,7 +53,20 @@ class CategorieController extends Controller
      */
     public function update(Request $request, Categorie $categorie)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'nom' => 'required|unique:categories,nom,' . $categorie->id . '|max:255',
+            'description' => 'nullable|string',
+            'image' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $categorie->fill($request->all());
+        $categorie->save();
+
+        return response()->json($categorie);
     }
 
     /**
@@ -61,6 +74,48 @@ class CategorieController extends Controller
      */
     public function destroy(Categorie $categorie)
     {
-        //
+        $categorie->delete();
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * Link a product to a category.
+     */
+    public function linkToCategorie(Request $request, $produitId, $categorieId)
+    {
+        $produit = Produit::find($produitId);
+        $categorie = Categorie::find($categorieId);
+
+        if (!$produit || !$categorie) {
+            return response()->json(['message' => 'Produit or Categorie not found'], 404);
+        }
+
+        $produit->categorie()->associate($categorie);
+        $produit->save();
+
+        return response()->json($produit);
+    }
+
+    /**
+     * Unlink a product from a specific category.
+     */
+    public function unlinkFromCategorie($produitId, $categorieId)
+    {
+        $produit = Produit::find($produitId);
+        $categorie = Categorie::find($categorieId);
+
+        if (!$produit || !$categorie) {
+            return response()->json(['message' => 'Produit or Categorie not found'], 404);
+        }
+
+        if ($produit->categorie->id != $categorie->id) {
+            return response()->json(['message' => 'Produit is not linked to the specified Categorie'], 400);
+        }
+
+        $produit->categorie()->dissociate();
+        $produit->save();
+
+        return response()->json($produit);
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\CategorieController;
 use App\Http\Controllers\Api\GroupeController;
 use App\Http\Controllers\Api\StockController;
 use App\Http\Controllers\Api\UserController;
@@ -7,6 +8,10 @@ use App\Http\Middleware\CheckStockAccess;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+    return response()->json(['message' => 'Hello World!']);
+});
 
 Route::post('/login', [UserController::class, 'login'])->name('login');
 Route::post('/register', [UserController::class, 'store'])->name('register');
@@ -24,6 +29,13 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::get('/users/{user}/groups', [UserController::class, 'groups']);
 
 
+    Route::get('/categories', [CategorieController::class, 'index']);
+    Route::post('/categories', [CategorieController::class, 'store']);
+    Route::get('/categories/{categorie}', [CategorieController::class, 'show']);
+    Route::put('/categories/{categorie}', [CategorieController::class, 'update']);
+    Route::delete('/categories/{categorie}', [CategorieController::class, 'destroy']);
+    Route::put('/produit/{produit}/categorie/{categorie}', [CategorieController::class, 'linkToCategorie']);
+    Route::put('/produit/{produit}/categorie/{categorie}/unlink', [CategorieController::class, 'unlinkFromCategorie']);
 
     /**
         Les stocks des utilisateurs
