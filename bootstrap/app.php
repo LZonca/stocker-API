@@ -13,7 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->appendToGroup('user-mgroup', \App\Http\Middleware\CheckUserSelf::class);
+        $middleware->appendToGroup('group-mgroup',\App\Http\Middleware\CheckGroupAccess::class);
+        $middleware->appendToGroup('owner-mgroup',\App\Http\Middleware\CheckGroupOwnership::class);
+        $middleware->appendToGroup('stock-mgroup',\App\Http\Middleware\CheckStockAccess::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

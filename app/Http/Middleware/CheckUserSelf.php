@@ -16,9 +16,22 @@ class CheckUserSelf
      */
     public function handle(Request $request, Closure $next)
     {
-        $user = $request->route('user');
+        $user = auth('sanctum')->user();
 
-        if ($user->id == $request->user()->id) {
+        // Check if the user is null
+        if (!$user) {
+            return response()->json(['message' => 'User not found.'], 404);
+        }
+
+        // Get the user ID from the route parameter
+        $routeUser = $request->route('user');
+        if (!$routeUser) {
+            return response()->json(['message' => 'User ID not provided in the route.'], 400);
+        }
+
+        $userIdFromRoute = $routeUser->id;
+
+        if ($user->id == $userIdFromRoute) {
             return $next($request);
         }
 
