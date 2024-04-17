@@ -13,76 +13,74 @@ Route::get('/', function () {
     return response()->json(['message' => 'Hello World!']);
 });
 
-Route::post('/login', [UserController::class, 'login'])->name('login');
-Route::post('/register', [UserController::class, 'store'])->name('register');
+// Routes d'authentification
+Route::post('/login', [UserController::class, 'login'])->name('login'); // Connexion de l'utilisateur
+Route::post('/register', [UserController::class, 'store'])->name('register'); // Inscription de l'utilisateur
 
+// Groupe de routes nécessitant une authentification
 Route::group(['middleware' => 'auth:sanctum'], function () {
+    // Obtenir l'utilisateur authentifié
     Route::get('/user', function (Request $request) {
         return $request->user();
     })->middleware('auth:sanctum');
 
-    Route::get('/users', [UserController::class, 'index']);
-    Route::post('/users', [UserController::class, 'store']);
-    Route::get('/users/{user}', [UserController::class, 'show']);
-    Route::patch('/users/{user}', [UserController::class, 'update']);
-    Route::delete('/users/{user}', [UserController::class, 'destroy']);
-    Route::get('/users/{user}/groups', [UserController::class, 'groups']);
+// Routes utilisateurs
+    Route::get('/users', [UserController::class, 'index']); // Obtenir tous les utilisateurs
+    Route::get('/users/{user}', [UserController::class, 'show']); // Obtenir un utilisateur spécifique
+
+    Route::group([\App\Http\Middleware\CheckUserSelf::class], function (){
+        Route::patch('/users/{user}', [UserController::class, 'update']); // Mettre à jour un utilisateur spécifique
+        Route::delete('/users/{user}', [UserController::class, 'destroy']); // Supprimer un utilisateur spécifique
+        Route::get('/users/{user}/groups', [UserController::class, 'groups']); // Obtenir tous les groupes d'un utilisateur spécifique
+
+        // Routes de stock
+        Route::get('/users/{user}/stocks', [StockController::class, 'index'])->name('api.stock.index'); // Obtenir tous les stocks d'un utilisateur spécifique
+        Route::post('/users/{user}/stocks', [StockController::class, 'store'])->name('api.stock.store'); // Créer un nouveau stock pour un utilisateur spécifique
+        Route::get('/users/{user}/stocks/{stock}', [StockController::class, 'show'])->name('api.stock.show'); // Obtenir un stock spécifique d'un utilisateur spécifique
+        Route::put('/users/{user}/stocks/{stock}', [StockController::class, 'update'])->name('api.stock.update'); // Mettre à jour un stock spécifique d'un utilisateur spécifique
+        Route::delete('/users/{user}/stocks/{stock}', [StockController::class, 'destroy'])->name('api.stock.destroy'); // Supprimer un stock spécifique d'un utilisateur spécifique
+
+        // Routes produits
+        Route::post('/users/{user}/stocks/{stock}/produits', [StockController::class, 'addProduct'])->name('api.stock.addProduct'); // Ajouter un produit à un stock spécifique d'un utilisateur spécifique
+        Route::get('/users/{user}/stocks/{stock}/produits', [StockController::class, 'content'])->name('api.stock.content'); // Obtenir tous les produits d'un stock spécifique d'un utilisateur spécifique
+        Route::delete('/users/{user}/stocks/{stock}/produits/{product}', [StockController::class, 'removeProductFromUserStock'])->name('api.user.stock.removeProduct'); // Supprimer un produit d'un stock spécifique d'un utilisateur spécifique
+        Route::patch('/users/{user}/stocks/{stock}/produits/{product}/remove', [StockController::class, 'decreaseProductQuantityInUserStock'])->name('api.user.stock.decreaseProductQuantity'); // Diminuer la quantité d'un produit spécifique dans un stock spécifique d'un utilisateur spécifique
+    });
+
+// Routes catégories
+
+   /*
+    Route::get('/categories', [CategorieController::class, 'index']); // Obtenir toutes les catégories
+    Route::post('/categories', [CategorieController::class, 'store']); // Créer une nouvelle catégorie
+    Route::get('/categories/{categorie}', [CategorieController::class, 'show']); // Obtenir une catégorie spécifique
+    Route::put('/categories/{categorie}', [CategorieController::class, 'update']); // Mettre à jour une catégorie spécifique
+    Route::delete('/categories/{categorie}', [CategorieController::class, 'destroy']); // Supprimer une catégorie spécifique
+    Route::put('/produit/{produit}/categorie/{categorie}', [CategorieController::class, 'linkToCategorie']); // Lier un produit à une catégorie
+    Route::put('/produit/{produit}/categorie/{categorie}/unlink', [CategorieController::class, 'unlinkFromCategorie']); // Dissocier un produit d'une catégorie
+   */
 
 
-    Route::get('/categories', [CategorieController::class, 'index']);
-    Route::post('/categories', [CategorieController::class, 'store']);
-    Route::get('/categories/{categorie}', [CategorieController::class, 'show']);
-    Route::put('/categories/{categorie}', [CategorieController::class, 'update']);
-    Route::delete('/categories/{categorie}', [CategorieController::class, 'destroy']);
-    Route::put('/produit/{produit}/categorie/{categorie}', [CategorieController::class, 'linkToCategorie']);
-    Route::put('/produit/{produit}/categorie/{categorie}/unlink', [CategorieController::class, 'unlinkFromCategorie']);
+    // Routes groupes
+        Route::group([\App\Http\Middleware\CheckGroupAccess::class], function (){
+        Route::get('/groups', [GroupeController::class, 'index']); // Obtenir tous les groupes
+        Route::post('/groups', [GroupeController::class, 'store']); // Créer un nouveau groupe
+        Route::get('/groups/{groupe}', [GroupeController::class, 'show']); // Obtenir un groupe spécifique
 
-    /**
-        Les stocks des utilisateurs
-     **/
+        Route::group([\App\Http\Middleware\CheckGroupOwnership::class], function () {
+            Route::patch('/groups/{groupe}', [GroupeController::class, 'update']); // Mettre à jour un groupe spécifique
+            Route::delete('/groups/{groupe}', [GroupeController::class, 'destroy']); // Supprimer un groupe spécifique
+            Route::post('/users/{user}/groups/{group}', [GroupeController::class, 'associateUser'])->name('api.user.associateUser'); // Associer un utilisateur à un groupe
+            Route::delete('/users/{user}/groups/{group}', [GroupeController::class, 'dissociateUser'])->name('api.user.dissociateUser'); // Dissocier un utilisateur d'un groupe
+        });
 
-/*    Route::middleware([CheckStockAccess::class])->group(function () {*/
-        Route::get('/users/{user}/stocks', [StockController::class, 'index'])->name('api.stock.index');
-        Route::post('/users/{user}/stocks', [StockController::class, 'store'])->name('api.stock.store');
-        Route::get('/users/{user}/stocks/{stock}', [StockController::class, 'show'])->name('api.stock.show');
-        Route::put('/users/{user}/stocks/{stock}', [StockController::class, 'update'])->name('api.stock.update');
-        Route::delete('/users/{user}/stocks/{stock}', [StockController::class, 'destroy'])->name('api.stock.destroy');
-/*    });*/
+        Route::get('/groups/{groupe}/users', [GroupeController::class, 'users'])->name('api.group.users'); // Obtenir tous les utilisateurs d'un groupe spécifique
 
-
-    /**
-        Les produits des stocks des utilisateurs
-     **/
-
-    Route::post('/users/{user}/stocks/{stock}/produits', [StockController::class, 'addProduct'])->name('api.stock.addProduct');
-    Route::get('/users/{user}/stocks/{stock}/produits', [StockController::class, 'content'])->name('api.stock.content');
-    Route::delete('/users/{user}/stocks/{stock}/produits/{product}', [StockController::class, 'removeProductFromUserStock'])->name('api.user.stock.removeProduct');
-    Route::patch('/users/{user}/stocks/{stock}/produits/{product}/remove', [StockController::class, 'decreaseProductQuantityInUserStock'])->name('api.user.stock.decreaseProductQuantity');
-
-    /**
-        Les groupes
-     **/
-
-    Route::get('/groups', [GroupeController::class, 'index']);
-    Route::post('/groups', [GroupeController::class, 'store']);
-    Route::get('/groups/{groupe}', [GroupeController::class, 'show']);
-    Route::patch('/groups/{groupe}', [GroupeController::class, 'update']);
-    Route::delete('/groups/{groupe}', [GroupeController::class, 'destroy']);
-    Route::get('/groups/{groupe}/users', [GroupeController::class, 'users'])->name('api.group.users');
-    Route::post('/users/{user}/groups/{group}', [GroupeController::class, 'associateUser'])->name('api.user.associateUser');
-    Route::delete('/users/{user}/groups/{group}', [GroupeController::class, 'dissociateUser'])->name('api.user.dissociateUser');
-
-
-    /**
-        Les stocks des groupes
-     **/
-
-    Route::get('/groups/{groupe}/stocks', [GroupeController::class, 'groupStocks'])->name('api.group.stocks');
-    Route::post('/groups/{groupe}/stocks/{stock}', [GroupeController::class, 'addStockToGroup'])->name('api.group.addStockToGroup');
-    Route::get('/groups/{groupe}/stocks/{stock}/produits', [GroupeController::class, 'groupStockProducts'])->name('api.group.stock.products');
-    Route::post('/groups/{groupe}/stocks/{stock}/produits', [GroupeController::class, 'addProduct'])->name('api.group.stock.addProduct');
-    Route::delete('/groups/{groupe}/stocks/{stock}/produits/{product}', [GroupeController::class, 'removeProductFromGroupStock'])->name('api.group.stock.removeProduct');
-    Route::patch('/groups/{groupe}/stocks/{stock}/produits/{product}/remove', [GroupeController::class, 'decreaseProductQuantityInGroupStock'])->name('api.group.stock.decreaseProductQuantity');
-
-
+    // Routes stock de groupes
+        Route::get('/groups/{groupe}/stocks', [GroupeController::class, 'groupStocks'])->name('api.group.stocks'); // Obtenir tous les stocks d'un groupe spécifique
+        Route::post('/groups/{groupe}/stocks/{stock}', [GroupeController::class, 'addStockToGroup'])->name('api.group.addStockToGroup'); // Ajouter un stock à un groupe
+        Route::get('/groups/{groupe}/stocks/{stock}/produits', [GroupeController::class, 'groupStockProducts'])->name('api.group.stock.products'); // Obtenir tous les produits d'un stock spécifique d'un groupe spécifique
+        Route::post('/groups/{groupe}/stocks/{stock}/produits', [GroupeController::class, 'addProduct'])->name('api.group.stock.addProduct'); // Ajouter un produit à un stock spécifique d'un groupe spécifique
+        Route::delete('/groups/{groupe}/stocks/{stock}/produits/{product}', [GroupeController::class, 'removeProductFromGroupStock'])->name('api.group.stock.removeProduct'); // Supprimer un produit d'un stock spécifique d'un groupe spécifique
+        Route::patch('/groups/{groupe}/stocks/{stock}/produits/{product}/remove', [GroupeController::class, 'decreaseProductQuantityInGroupStock'])->name('api.group.stock.decreaseProductQuantity'); // Diminuer la quantité d'un produit spécifique dans un stock spécifique d'un groupe spécifique
+    });
 });

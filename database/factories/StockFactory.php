@@ -36,11 +36,11 @@ class StockFactory extends Factory
     public function configure()
     {
         return $this->afterCreating(function (Stock $stock) {
-            $produits = Produit::all();
-            $stock->produits()->attach(
-                $produits->random(rand(1, 3))->pluck('id')->toArray()
+            // Create a product
+            $product = Produit::factory()->create();
 
-            );
+            // Attach the product to the stock
+            $stock->produits()->attach($product->id, ['quantite' => 1]);
         });
     }
 }

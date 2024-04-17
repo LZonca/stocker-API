@@ -179,7 +179,7 @@ class GroupeController extends Controller
             return response()->json(['message' => 'Stock not found.'], 404);
         }
 
-        $product = Produit::where('code', $request->code)->first();
+        $product = Produit::where('nom', $request->nom)->first();
 
         if (!$product) {
             // The product is not found, create it
@@ -191,13 +191,25 @@ class GroupeController extends Controller
 
         if ($pivot) {
             // The product is already in the stock, increment the quantity
-            $stock->produits()->updateExistingPivot($product->id, ['quantite' => DB::raw('quantite + 1')]);
+            $pivot = $stock->produits()->where('produit_id', $product->id)->first();
+            $pivot->pivot->quantite += 1;
+            $pivot->pivot->save();
             return response()->json(['message' => 'Product quantity incremented.'], 200);
         } else {
             // The product is not in the stock, add it
             $stock->produits()->attach($product->id, ['quantite' => 1]);
             return response()->json(['message' => 'Product added to stock successfully.'], 200);
         }
+
+        /*if ($pivot) {
+            // The product is already in the stock, increment the quantity
+            $stock->produits()->updateExistingPivot($product->id, ['quantite' => DB::raw('quantite + 1')]);
+            return response()->json(['message' => 'Product quantity incremented.'], 200);
+        } else {
+            // The product is not in the stock, add it
+            $stock->produits()->attach($product->id, ['quantite' => 1]);
+            return response()->json(['message' => 'Product added to stock successfully.'], 200);
+        }*/
     }
 
     public function removeProductFromGroupStock(Groupe $groupe, Stock $stock, Produit $product)

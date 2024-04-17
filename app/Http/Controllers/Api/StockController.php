@@ -86,8 +86,8 @@ class StockController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'code' => 'required',
-            'nom' => 'required', // Ensure that 'nom' is always provided
+            'code' => 'nullable|string',
+            'nom' => 'required|string', // Ensure that 'nom' is always provided
             // Add other validation rules as needed
         ]);
 
@@ -111,7 +111,7 @@ class StockController extends Controller
         }
 
         // Check if the product's code is already in the stock
-        $pivot = $stock->produits()->where('code', $product->code)->first();
+        $pivot = $stock->produits()->where('nom', $product->nom)->first();
 
         if ($pivot) {
             // The product is already in the stock, increment the quantity
