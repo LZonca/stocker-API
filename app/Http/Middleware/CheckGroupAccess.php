@@ -17,11 +17,13 @@ class CheckGroupAccess
     public function handle(Request $request, Closure $next)
     {
         $group = $request->route('groupe');
-
-        if ($group->users->contains($request->user()) || $group->proprietaire_id == $request->user()->id) {
-            return $next($request);
+        $user = auth('sanctum')->user();
+        if (!$group->users->contains($request->user())){
+            return response()->json(['message' => 'You are not a member of this group.'], 403);
         }
-
-        return response()->json(['message' => 'You do not have access to this group.'], 403);
+        if($group->proprietaire_id != $request->user()->id) {
+            return response()->json(['message' => 'You are not the owner of this group.'], 403);
+        }
+        return $next($request);
     }
 }
