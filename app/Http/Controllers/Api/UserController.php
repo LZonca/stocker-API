@@ -54,34 +54,34 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show(Request $request, User $user)
     {
-        return response()->json($user->load('stocks.produits', 'groupes'));
+        return response()->json($user);
     }
 
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:8',
+            'name' => 'sometimes|required|max:255',
+            'email' => 'sometimes|required|email|unique:users,email,'.$request->user()->id,
+            'password' => 'sometimes|required|min:8',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $user->update([
+        $request->user()->update([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        return response()->json($user);
+        return response()->json($request->user());
     }
 
     /**
@@ -94,9 +94,9 @@ class UserController extends Controller
         return response()->json(null, 204);
     }
 
-    public function groups(User $user)
+    public function groups(Request $request)
     {
-        return response()->json($user->groupes);
+        return response()->json($request->user()->groupes);
     }
 
     function login(Request $request)

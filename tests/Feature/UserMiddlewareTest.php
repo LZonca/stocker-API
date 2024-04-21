@@ -13,18 +13,18 @@ class UserMiddlewareTest extends TestCase
     {
         $user = \App\Models\User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/users/' . $user->id . '/groups');
+        $response = $this->actingAs($user)->get('/user/groups');
 
         $response->assertStatus(200);
     }
 
-    public function testUserTriesToGetNotAllowedRessourceShouldFail()
+/*    public function testUserTriesToGetNotAllowedRessourceShouldFail() // Test is outdated from the API changes
     {
         $user = \App\Models\User::factory()->create();
-        \App\Models\User::factory()->count(2)->create();
+        $user2 = \App\Models\User::factory()->create();
 
-        $response = $this->actingAs($user)->get('/users/2/groups');
+        $response = $this->actingAs($user)->get('/user/groups');
 
         $response->assertStatus(403);
-    }
+    }*/
 }

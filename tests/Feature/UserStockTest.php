@@ -40,7 +40,7 @@ class UserStockTest extends TestCase
             'code' => '123456789',
         ]);
 
-        $response = $this->actingAs($user)->post("/users/{$user->id}/stocks/{$stock->id}/produits", [
+        $response = $this->actingAs($user)->post("/user/stocks/{$stock->id}/produits", [
             'code' => $product->code,
             'nom' => $product->nom,
         ]);
@@ -60,7 +60,7 @@ class UserStockTest extends TestCase
 
         $stock = Stock::factory()->create(['proprietaire_id' => $user->id]);
 
-        $response = $this->actingAs($user)->post("/users/{$user->id}/stocks/{$stock->id}/produits", [
+        $response = $this->actingAs($user)->post("/user/stocks/{$stock->id}/produits", [
             'code' => '', // Invalid product code
             'nom' => '', // Invalid product name
         ]);

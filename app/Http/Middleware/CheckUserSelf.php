@@ -24,14 +24,14 @@ class CheckUserSelf
         }
 
         // Get the user ID from the route parameter
-        $routeUser = $request->route('user');
+/*        $routeUser = $request->route('user');
         if (!$routeUser) {
             return response()->json(['message' => 'User ID not provided in the route.'], 400);
-        }
+        }*/
 
-        $userIdFromRoute = $routeUser->id;
+        /*$userIdFromRoute = $routeUser->id;*/
 
-        if ($user->id == $userIdFromRoute) {
+        if ($user->id == $request->user()->id) {
             return $next($request);
         }
 

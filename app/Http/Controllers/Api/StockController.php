@@ -20,10 +20,20 @@ class StockController extends Controller
         return response()->json($user->stocks);
     }
 
+    public function userStocks(User $user)
+    {
+        $userStocks = $user->stocks()->with('produits')->get();
+        $groupStocks = $user->groupes()->with('stocks.produits')->get()->pluck('stocks')->collapse();
+
+        $stocks = $userStocks->merge($groupStocks);
+
+        return response()->json($stocks);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, User $user)
+    public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'nom' => 'required|max:255',
@@ -35,7 +45,7 @@ class StockController extends Controller
         }
 
         $stock = new Stock($request->all());
-        $stock->proprietaire()->associate($user);
+        $stock->proprietaire()->associate($request->user());
         $stock->save();
 
         return response()->json($stock, 201);
@@ -44,18 +54,18 @@ class StockController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user, Stock $stock)
+    public function show(Request $request, Stock $stock)
     {
-        return response()->json($user->stocks->find($stock->id));
+        return response()->json($request->user()->stocks->find($stock->id));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user, Stock $stock)
+    public function update(Request $request, Stock $stock)
     {
         $validator = Validator::make($request->all(), [
-            'nom' => 'required|max:255',
+            'nom' => 'sometimes|max:255',
             'image' => 'nullable|image',
         ]);
 
@@ -63,9 +73,7 @@ class StockController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-
-
-        $stock = $user->stocks->find($stock->id);
+        $stock = $request->user()->stocks->find($stock->id);
         $stock->update($request->all());
 
         return response()->json($stock);
@@ -74,15 +82,15 @@ class StockController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user, Stock $stock)
+    public function destroy(Request $request, Stock $stock)
     {
-        $stock = $user->stocks->find($stock->id);
+        $stock = $request->user()->stocks->find($stock->id);
         $stock->delete();
 
         return response()->json(null, 204);
     }
 
-    public function addProduct(User $user, Stock $stock, Request $request)
+    public function addProduct(Stock $stock, Request $request)
     {
 
         $validator = Validator::make($request->all(), [
@@ -95,7 +103,7 @@ class StockController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $stock = $user->stocks->find($stock->id);
+        $stock = $request->user()->stocks->find($stock->id);
 
 
         // Check if the stock exists
@@ -124,9 +132,9 @@ class StockController extends Controller
         }
     }
 
-    public function decreaseProductQuantityInUserStock(User $user, Stock $stock, Produit $product)
+    public function decreaseProductQuantityInUserStock(Request $request, Stock $stock, Produit $product)
     {
-        $stock = $user->stocks->find($stock->id);
+        $stock = $request->user()->stocks->find($stock->id);
 
         // Check if the stock exists
         if (!$stock) {
@@ -150,9 +158,9 @@ class StockController extends Controller
         }
     }
 
-    public function removeProductFromUserStock(User $user, Stock $stock, Produit $product)
+    public function removeProductFromUserStock(Request $request, Stock $stock, Produit $product)
     {
-        $stock = $user->stocks->find($stock->id);
+        $stock = $request->user()->stocks->find($stock->id);
 
         // Check if the stock exists
         if (!$stock) {

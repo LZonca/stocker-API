@@ -107,6 +107,16 @@ class GroupeController extends Controller
         return response()->json($groupe->users);
     }
 
+    public function user(Groupe $groupe, User $user)
+    {
+        $user = $groupe->users->find($user->id);
+        if (!$user) {
+            return response()->json(['message' => 'User not found.'], 404);
+        }
+        return response()->json($user);
+    }
+
+
     public function groupStocks(Groupe $groupe)
     {
         return response()->json($groupe->stocks);
