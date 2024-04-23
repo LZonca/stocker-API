@@ -94,8 +94,10 @@ class StockController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'code' => 'nullable|string',
-            'nom' => 'required|string', // Ensure that 'nom' is always provided
+            'code' => 'nullable|string|max:255',
+            'nom' => 'required|string|max:255',
+            'image' => 'nullable|image',
+            // Ensure that 'nom' is always provided
             // Add other validation rules as needed
         ]);
 
