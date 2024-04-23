@@ -51,7 +51,8 @@ class GroupeController extends Controller
         $groupe->save();
 
         // Associate the user with the group
-        $user = User::find($request->proprietaire_id);
+        $user = User::find($request->user()->id);
+
         $user->groupes()->attach($groupe);
 
         return response()->json($groupe, 201);
