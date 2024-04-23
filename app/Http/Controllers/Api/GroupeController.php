@@ -54,7 +54,7 @@ class GroupeController extends Controller
         $user = User::find($request->user()->id);
 
         $user->groupes()->attach($groupe);
-
+        $groupe->load('stocks.produits', 'proprietaire');
         return response()->json($groupe, 201);
     }
 
