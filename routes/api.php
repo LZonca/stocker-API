@@ -49,7 +49,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/user/stocks/{stock}/produits', [StockController::class, 'content'])->name('api.stock.content'); // Obtenir tous les produits d'un stock spécifique d'un utilisateur spécifique
         Route::delete('/user/stocks/{stock}/produits/{product}', [StockController::class, 'removeProductFromUserStock'])->name('api.user.stock.removeProduct'); // Supprimer un produit d'un stock spécifique d'un utilisateur spécifique
         Route::patch('/user/stocks/{stock}/produits/{product}/remove', [StockController::class, 'decreaseProductQuantityInUserStock'])->name('api.user.stock.decreaseProductQuantity'); // Diminuer la quantité d'un produit spécifique dans un stock spécifique d'un utilisateur spécifique
-        Route::post('/user/groups', [GroupeController::class, 'store']); // Créer un nouveau groupe
+        Route::post('/user/groups', [GroupeController::class, 'store']); // Créer un nouveau groupe au nom de l'utilisateur
     });
 
 // Routes catégories
