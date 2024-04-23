@@ -39,7 +39,6 @@ class GroupeController extends Controller
         $validator = Validator::make($request->all(), [
             'nom' => 'required|unique:groupes|max:255',
             'image' => 'nullable|image',
-            'proprietaire_id' => 'required|exists:users,id',
         ]);
 
         if ($validator->fails()) {
@@ -48,6 +47,7 @@ class GroupeController extends Controller
 
         $groupe = new Groupe;
         $groupe->fill($request->all());
+        $groupe->proprietaire_id = $request->user()->id;
         $groupe->save();
 
         // Associate the user with the group
