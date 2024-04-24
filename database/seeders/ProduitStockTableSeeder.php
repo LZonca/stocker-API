@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Produit;
 use App\Models\Stock;
+use Illuminate\Database\Seeder;
 
 class ProduitStockTableSeeder extends Seeder
 {

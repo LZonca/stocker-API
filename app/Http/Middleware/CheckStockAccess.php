@@ -2,10 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Stock;
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\Stock;
-use App\Models\Groupe;
 
 class CheckStockAccess
 {

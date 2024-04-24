@@ -81,9 +81,9 @@ class GroupeController extends Controller
     public function update(Request $request, Groupe $groupe)
     {
         $validator = Validator::make($request->all(), [
-            'nom' => 'required|unique:groupes|max:255',
-            'image' => 'nullable|image',
-            'proprietaire_id' => 'required|exists:users,id',
+            'nom' => 'sometimes|unique:groupes|max:255',
+            'image' => 'sometimes|nullable|image',
+            'proprietaire_id' => 'sometimes|exists:users,id',
         ]);
 
         if ($validator->fails()) {
@@ -105,12 +105,12 @@ class GroupeController extends Controller
 
     public function users(Groupe $groupe)
     {
-        return response()->json($groupe->users);
+        return response()->json($groupe->members);
     }
 
     public function user(Groupe $groupe, User $user)
     {
-        $user = $groupe->users->find($user->id);
+        $user = $groupe->members()->find($user->id);
         if (!$user) {
             return response()->json(['message' => 'User not found.'], 404);
         }

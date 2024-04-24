@@ -1,18 +1,14 @@
 <?php
 
-use App\Http\Controllers\Api\CategorieController;
 use App\Http\Controllers\Api\GroupeController;
 use App\Http\Controllers\Api\StockController;
 use App\Http\Controllers\Api\UserController;
-use App\Http\Middleware\CheckStockAccess;
-use App\Http\Middleware\CheckUserSelf;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
+/*Route::get('/', function () {
     return response()->json(['message' => 'Hello World!']);
-});
+});*/
 
 // Routes d'authentification
 Route::post('/login', [UserController::class, 'login'])->name('login'); // Connexion de l'utilisateur
@@ -23,7 +19,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     // Obtenir l'utilisateur authentifié
     Route::get('/user', function (Request $request) {
-        return response()->json($request->user()->load('stocks.produits', 'groupes.stocks.produits'));
+
+        return response()->json($request->user()->load('stocks.produits', 'groupes.stocks.produits', 'groupes.members', 'groupes.proprietaire'));
     });
 
 // Routes utilisateurs

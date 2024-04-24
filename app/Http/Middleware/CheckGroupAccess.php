@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Groupe;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -25,7 +24,7 @@ class CheckGroupAccess
             return response()->json(['message' => 'Group not found.'], 404);
         }
 
-        if (!$group->users->contains($request->user())){
+        if (!$group->members->contains($request->user())){
             return response()->json(['message' => 'You are not a member of this group.'], 403);
         }
         if($group->proprietaire_id != $request->user()->id) {

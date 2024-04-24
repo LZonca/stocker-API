@@ -11,7 +11,7 @@ class Groupe extends Model
 
     protected $fillable = ['nom', 'image', 'proprietaire_id'];
 
-    public function users()
+    public function members()
     {
         return $this->belongsToMany(User::class, 'user_belongs_to_groupe');
     }
