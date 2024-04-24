@@ -105,12 +105,12 @@ class GroupeController extends Controller
 
     public function users(Groupe $groupe)
     {
-        return response()->json($groupe->members);
+        return response()->json($groupe->users());
     }
 
     public function user(Groupe $groupe, User $user)
     {
-        $user = $groupe->members()->find($user->id);
+        $user = $groupe->users()->find($user->id);
         if (!$user) {
             return response()->json(['message' => 'User not found.'], 404);
         }
@@ -131,15 +131,24 @@ class GroupeController extends Controller
         return response()->json(['message' => 'Stock associated to the group successfully']);
     }
 
-    public function associateUser(User $user, Groupe $group)
+    public function associateUser(Request $request, Groupe $groupe)
     {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|exists:users,email',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $user = User::where('email', $request->email)->first();
         // Check if the user is already associated with the group
-        if ($user->groupes()->where('groupe_id', $group->id)->exists()) {
+        if ($user->groupes()->where('groupe_id', $groupe->id)->exists()) {
             return response()->json(['message' => 'User is already associated with this group.'], 409);
         }
 
         // Associate the user with the group
-        $user->groupes()->attach($group);
+        $user->groupes()->attach($groupe->id);
 
         return response()->json(['message' => 'User associated with the group successfully.'], 200);
     }
