@@ -32,9 +32,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::patch('/user', [UserController::class, 'update']); // Mettre à jour un utilisateur spécifique
         Route::delete('/users/{user}', [UserController::class, 'destroy']); // Supprimer un utilisateur spécifique
         Route::get('/user/groups', [UserController::class, 'groups']); // Obtenir tous les groupes d'un utilisateur spécifique
+        Route::post('/user/groups', [GroupeController::class, 'store']); // Créer un nouveau groupe au nom de l'utilisateur
 
         // Routes de stock
-        Route::get('/user/stocks', [StockController::class, 'index'])->name('api.stock.index'); // Obtenir tous les stocks d'un utilisateur spécifique
+        Route::get('/user/stocks', [StockController::class, 'userStocks'])->name('api.stock.userStocks  '); // Obtenir tous les stocks d'un utilisateur spécifique
         /*Route::get('/users/{user}/stocks/all', [StockController::class, 'userStocks'])->name('api.stock.userStocks'); // Obtenir tous les stocks d'un utilisateur spécifique*/
         Route::post('/user/stocks', [StockController::class, 'store'])->name('api.stock.store'); // Créer un nouveau stock pour un utilisateur spécifique
         Route::get('/user/stocks/{stock}', [StockController::class, 'show'])->name('api.stock.show'); // Obtenir un stock spécifique d'un utilisateur spécifique
@@ -46,7 +47,6 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/user/stocks/{stock}/produits', [StockController::class, 'content'])->name('api.stock.content'); // Obtenir tous les produits d'un stock spécifique d'un utilisateur spécifique
         Route::delete('/user/stocks/{stock}/produits/{product}', [StockController::class, 'removeProductFromUserStock'])->name('api.user.stock.removeProduct'); // Supprimer un produit d'un stock spécifique d'un utilisateur spécifique
         Route::patch('/user/stocks/{stock}/produits/{product}/remove', [StockController::class, 'decreaseProductQuantityInUserStock'])->name('api.user.stock.decreaseProductQuantity'); // Diminuer la quantité d'un produit spécifique dans un stock spécifique d'un utilisateur spécifique
-        Route::post('/user/groups', [GroupeController::class, 'store']); // Créer un nouveau groupe au nom de l'utilisateur
     });
 
 // Routes catégories
@@ -79,7 +79,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
     // Routes stock de groupes
         Route::get('/groups/{groupe}/stocks', [GroupeController::class, 'groupStocks'])->name('api.group.stocks'); // Obtenir tous les stocks d'un groupe spécifique
-        Route::post('/groups/{groupe}/stocks/{stock}', [GroupeController::class, 'addStockToGroup'])->name('api.group.addStockToGroup'); // Ajouter un stock à un groupe
+        Route::post('/groups/{groupe}/stocks', [GroupeController::class, 'addStockToGroup'])->name('api.group.addStockToGroup'); // Ajouter un stock à un groupe
         Route::get('/groups/{groupe}/stocks/{stock}/produits', [GroupeController::class, 'groupStockProducts'])->name('api.group.stock.products'); // Obtenir tous les produits d'un stock spécifique d'un groupe spécifique
         Route::post('/groups/{groupe}/stocks/{stock}/produits', [GroupeController::class, 'addProduct'])->name('api.group.stock.addProduct'); // Ajouter un produit à un stock spécifique d'un groupe spécifique
         Route::delete('/groups/{groupe}/stocks/{stock}/produits/{product}', [GroupeController::class, 'removeProductFromGroupStock'])->name('api.group.stock.removeProduct'); // Supprimer un produit d'un stock spécifique d'un groupe spécifique

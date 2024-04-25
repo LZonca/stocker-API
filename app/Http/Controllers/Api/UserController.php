@@ -94,7 +94,12 @@ class UserController extends Controller
 
     public function groups(Request $request)
     {
-        return response()->json($request->user()->groupes);
+        $groups = $request->user()->groupes;
+
+        // Eager load the stocks, proprietaire, and members relationships
+        $groups->load('stocks', 'proprietaire', 'members');
+
+        return response()->json($groups);
     }
 
     function login(Request $request)

@@ -20,14 +20,23 @@ class StockController extends Controller
         return response()->json($user->stocks);
     }
 
-    public function userStocks(User $user)
+    public function userStocks(Request $request)
     {
-        $userStocks = $user->stocks()->with('produits')->get();
-        $groupStocks = $user->groupes()->with('stocks.produits')->get()->pluck('stocks')->collapse();
+        $userStocks = $request->user()->stocks;
+        foreach ($userStocks as $stock) {
+            $stock->load('produits');
+        }
 
-        $stocks = $userStocks->merge($groupStocks);
+        $groupStocks = $request->user()->groupes->flatMap(function ($group) {
+            return $group->stocks;
+        });
+        foreach ($groupStocks as $stock) {
+            $stock->load('produits');
+        }
 
-        return response()->json($stocks);
+        $stocks = $userStocks->concat($groupStocks)->unique('id');
+
+        return response()->json($stocks->values());
     }
 
     /**

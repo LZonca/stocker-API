@@ -15,7 +15,7 @@ class GroupMiddlewareTest extends TestCase
         $group = \App\Models\Groupe::factory()->create();
 
         // Add the user to the group
-        $group->users()->attach($user->id);
+        $group->members()->attach($user->id);
 
         $response = $this->actingAs($user)->get('/groups/' . $group->id );
 
@@ -37,7 +37,7 @@ class GroupMiddlewareTest extends TestCase
         $user = \App\Models\User::factory()->create();
         $group = \App\Models\Groupe::factory()->create(['proprietaire_id' => $user->id]);
 
-        $group->users()->attach($user->id);
+        $group->members()->attach($user->id);
 
         $response = $this->actingAs($user)->delete('/groups/' . $group->id );
 
@@ -50,8 +50,8 @@ class GroupMiddlewareTest extends TestCase
         $user2 = \App\Models\User::factory()->create();
         $group = \App\Models\Groupe::factory()->create(['proprietaire_id' => $user->id]);
 
-        $group->users()->attach($user->id);
-        $group->users()->attach($user2->id);
+        $group->members()->attach($user->id);
+        $group->members()->attach($user2->id);
 
         $response = $this->actingAs($user2)->delete('/groups/' . $group->id );
 

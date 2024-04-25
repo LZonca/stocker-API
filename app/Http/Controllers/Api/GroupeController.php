@@ -123,8 +123,18 @@ class GroupeController extends Controller
         return response()->json($groupe->stocks);
     }
 
-    public function addStockToGroup(Groupe $groupe, Stock $stock)
+    public function addStockToGroup(Request $request, Groupe $groupe)
     {
+        $validator = Validator::make($request->all(), [
+            'nom' => 'required|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+        $stock = new Stock;
+        $stock->nom = $request->nom;
+        $stock->proprietaire_id = $request->user()->id;
         $stock->groupe()->associate($groupe);
         $stock->save();
 

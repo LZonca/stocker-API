@@ -18,7 +18,6 @@ class CreateStocksTable extends Migration
             $table->string('nom');
             $table->unsignedBigInteger('proprietaire_id');
             $table->timestamps();
-
             $table->foreign('proprietaire_id')->references('id')->on('users');
         });
     }
