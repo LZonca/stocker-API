@@ -96,7 +96,7 @@ class StockController extends Controller
         $stock = $request->user()->stocks->find($stock->id);
         $stock->delete();
 
-        return response()->json(null, 204);
+        return response()->json(['message' => __('Stock removed successfully')], 204);
     }
 
     public function addProduct(Stock $stock, Request $request)
@@ -119,7 +119,7 @@ class StockController extends Controller
 
         // Check if the stock exists
         if (!$stock) {
-            return response()->json(['message' => 'Stock not found.'], 404);
+            return response()->json(['message' => __('Stock not found.')], 404);
         }
 
         $product = Produit::where('code', $request->code)->first();
@@ -135,11 +135,11 @@ class StockController extends Controller
         if ($pivot) {
             // The product is already in the stock, increment the quantity
             $stock->produits()->updateExistingPivot($product->id, ['quantite' => DB::raw('quantite + 1')]);
-            return response()->json(['message' => 'Product quantity incremented.'], 200);
+            return response()->json(['message' => __('Product quantity incremented.')], 200);
         } else {
             // The product is not in the stock, add it
             $stock->produits()->attach($product->id, ['quantite' => 1]);
-            return response()->json(['message' => 'Product added to stock successfully.'], 200);
+            return response()->json(['message' => __('Product added to the stock successfully.')], 200);
         }
     }
 
@@ -149,23 +149,23 @@ class StockController extends Controller
 
         // Check if the stock exists
         if (!$stock) {
-            return response()->json(['message' => 'Stock not found.'], 404);
+            return response()->json(['message' => __('Stock not found.')], 404);
         }
 
         // Check if the product is in the stock
         $pivot = $stock->produits()->where('produit_id', $product->id)->first();
 
         if (!$pivot) {
-            return response()->json(['message' => 'Product not found in the stock.'], 404);
+            return response()->json(['message' => __('This product does not exist in this stock.')], 404);
         }
 
         // Check if the product quantity is greater than 1
         if ($pivot->quantite > 1) {
             $stock->produits()->updateExistingPivot($product->id, ['quantite' => DB::raw('quantite - 1')]);
-            return response()->json(['message' => 'Product quantity decremented.'], 200);
+            return response()->json(['message' => __('Product quantity decreased successfully.')], 200);
         } else {
             $stock->produits()->detach($product->id);
-            return response()->json(['message' => 'Product removed from stock successfully.'], 200);
+            return response()->json(['message' => __('Product removed from the stock successfully.')], 200);
         }
     }
 
@@ -175,19 +175,19 @@ class StockController extends Controller
 
         // Check if the stock exists
         if (!$stock) {
-            return response()->json(['message' => 'Stock not found.'], 404);
+            return response()->json(['message' => __('Stock not found.')], 404);
         }
 
         // Check if the product is in the stock
         $pivot = $stock->produits()->where('produit_id', $product->id)->first();
 
         if (!$pivot) {
-            return response()->json(['message' => 'Product not found in the stock.'], 404);
+            return response()->json(['message' => __('This product does not exist in this stock.')], 404);
         }
 
         $stock->produits()->detach($product->id);
 
-        return response()->json(['message' => 'Product removed from stock successfully.'], 200);
+        return response()->json(['message' => __('Product removed from the stock successfully.')], 200);
     }
 
     /**

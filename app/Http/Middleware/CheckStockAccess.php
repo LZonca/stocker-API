@@ -22,7 +22,7 @@ class CheckStockAccess
 
         // Check if the stock exists
         if (!$stock) {
-            return response()->json(['message' => 'Stock not found.'], 404);
+            return response()->json(['message' => __('Stock not found.')], 404);
         }
 
         // Check if the user owns the stock
@@ -38,6 +38,6 @@ class CheckStockAccess
         }
 
         // If the user does not own the stock and does not belong to a group that can see the stock, return a 403 response
-        return response()->json(['message' => 'You do not have access to this stock.'], 403);
+        return response()->json(['message' => __('You do not have access to this stock.')], 403);
     }
 }

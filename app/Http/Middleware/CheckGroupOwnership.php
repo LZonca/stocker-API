@@ -22,6 +22,6 @@ class CheckGroupOwnership
             return $next($request);
         }
 
-        return response()->json(['message' => 'You do not own this group.'], 403);
+        return response()->json(['message' => __('You are not the owner of this group.')], 403);
     }
 }

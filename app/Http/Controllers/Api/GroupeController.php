@@ -112,7 +112,7 @@ class GroupeController extends Controller
     {
         $user = $groupe->members()->find($user->id);
         if (!$user) {
-            return response()->json(['message' => 'User not found.'], 404);
+            return response()->json(['message' => __('User is not a member of this group.')], 404);
         }
         return response()->json($user);
     }
@@ -138,7 +138,7 @@ class GroupeController extends Controller
         $stock->groupe()->associate($groupe);
         $stock->save();
 
-        return response()->json(['message' => 'Stock associated to the group successfully']);
+        return response()->json(['message' => __('Stock added to the group successfully.')], 200);
     }
 
     public function associateUser(Request $request, Groupe $groupe)
@@ -154,33 +154,33 @@ class GroupeController extends Controller
         $user = User::where('email', $request->email)->first();
         // Check if the user is already associated with the group
         if ($user->groupes()->where('groupe_id', $groupe->id)->exists()) {
-            return response()->json(['message' => 'User is already associated with this group.'], 409);
+            return response()->json(['message' => __('User is already associated with this group.')], 409);
         }
 
         // Associate the user with the group
         $user->groupes()->attach($groupe->id);
 
-        return response()->json(['message' => 'User associated with the group successfully.'], 200);
+        return response()->json(['message' => __('User has been added to the group successfully!')], 200);
     }
 
     public function dissociateUser(User $user, Groupe $group)
     {
         // Check if the user is associated with the group
         if (!$user->groupes()->where('groupe_id', $group->id)->exists()) {
-            return response()->json(['message' => 'User is not associated with this group.'], 404);
+            return response()->json(['message' => __('User is not a member of this group.')], 404);
         }
 
         // Dissociate the user from the group
         $user->groupes()->detach($group);
 
-        return response()->json(['message' => 'User dissociated from the group successfully.'], 200);
+        return response()->json(['message' => __('User has been removed from the group.')], 200);
     }
 
     public function groupStockProducts(Groupe $groupe, Stock $stock)
     {
         // Check if the stock is associated with the group
         if ($stock->groupe_id != $groupe->id) {
-            return response()->json(['message' => 'Stock is not associated with this group.'], 404);
+            return response()->json(['message' => __('This stock does not belong to this group.')], 404);
         }
 
         // Get the products associated with the stock
@@ -206,7 +206,7 @@ class GroupeController extends Controller
 
         // Check if the stock exists
         if (!$stock) {
-            return response()->json(['message' => 'Stock not found.'], 404);
+            return response()->json(['message' => __('Stock not found.')], 404);
         }
 
         $product = Produit::where('nom', $request->nom)->first();
@@ -224,64 +224,54 @@ class GroupeController extends Controller
             $pivot = $stock->produits()->where('produit_id', $product->id)->first();
             $pivot->pivot->quantite += 1;
             $pivot->pivot->save();
-            return response()->json(['message' => 'Product quantity incremented.'], 200);
+            return response()->json(['message' => __('Product quantity incremented.')], 200);
         } else {
             // The product is not in the stock, add it
             $stock->produits()->attach($product->id, ['quantite' => 1]);
-            return response()->json(['message' => 'Product added to stock successfully.'], 200);
+            return response()->json(['message' => __('Product added to the stock successfully.')], 200);
         }
-
-        /*if ($pivot) {
-            // The product is already in the stock, increment the quantity
-            $stock->produits()->updateExistingPivot($product->id, ['quantite' => DB::raw('quantite + 1')]);
-            return response()->json(['message' => 'Product quantity incremented.'], 200);
-        } else {
-            // The product is not in the stock, add it
-            $stock->produits()->attach($product->id, ['quantite' => 1]);
-            return response()->json(['message' => 'Product added to stock successfully.'], 200);
-        }*/
     }
 
     public function removeProductFromGroupStock(Groupe $groupe, Stock $stock, Produit $product)
     {
         // Check if the stock is associated with the group
         if ($stock->groupe_id != $groupe->id) {
-            return response()->json(['message' => 'Stock is not associated with this group.'], 404);
+            return response()->json(['message' => __('This stock does not belong to this group.')], 404);
         }
 
         // Check if the product is associated with the stock
         if (!$stock->produits()->where('produit_id', $product->id)->exists()) {
-            return response()->json(['message' => 'Product is not associated with this stock.'], 404);
+            return response()->json(['message' => __('This product does not exist in this stock.')], 404);
         }
 
         // Dissociate the product from the stock
         $stock->produits()->detach($product);
 
-        return response()->json(['message' => 'Product removed from the stock successfully.'], 200);
+        return response()->json(['message' => __('Product removed from the stock successfully.')], 200);
     }
 
     public function decreaseProductQuantityInGroupStock(Groupe $groupe, Stock $stock, Produit $product)
     {
         // Check if the stock is associated with the group
         if ($stock->groupe_id != $groupe->id) {
-            return response()->json(['message' => 'Stock is not associated with this group.'], 404);
+            return response()->json(['message' => __('This stock does not belong to this group.')], 404);
         }
 
         // Check if the product is associated with the stock
         $pivot = $stock->produits()->where('produit_id', $product->id)->first();
         if (!$pivot) {
-            return response()->json(['message' => 'Product is not associated with this stock.'], 404);
+            return response()->json(['message' => __('This product does not exist in this stock.')], 404);
         }
 
         // Check if the quantity is greater than 1
         if ($pivot->pivot->quantite > 1) {
             // Decrease the quantity of the product in the stock
             $stock->produits()->updateExistingPivot($product->id, ['quantite' => DB::raw('quantite - 1')]);
-            return response()->json(['message' => 'Product quantity decreased.'], 200);
+            return response()->json(['message' => __('Product quantity decreased successfully.')], 200);
         } else {
             // If the quantity is 1, remove the product from the stock
             $stock->produits()->detach($product);
-            return response()->json(['message' => 'Product removed from the stock.'], 200);
+            return response()->json(['message' => __('Product removed from the stock')], 200);
         }
     }
 }

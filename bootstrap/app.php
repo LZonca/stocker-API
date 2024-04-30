@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('group-mgroup',\App\Http\Middleware\CheckGroupAccess::class);
         $middleware->appendToGroup('owner-mgroup',\App\Http\Middleware\CheckGroupOwnership::class);
         $middleware->appendToGroup('stock-mgroup',\App\Http\Middleware\CheckStockAccess::class);
+        $middleware->appendToGroup('set-locale', \App\Http\Middleware\SetLocale::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

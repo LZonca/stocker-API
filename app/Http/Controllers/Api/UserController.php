@@ -102,24 +102,23 @@ class UserController extends Controller
         return response()->json($groups);
     }
 
-    function login(Request $request)
+    public function login(Request $request)
     {
-
         $user= User::where('email', $request->email)->first();
 
         if (!$user) {
             return response([
-                'message' => ['No user found with email: ' . $request->email]
+                'message' => [__('No user found with email: :email', ['email' => $request->email])]
             ], 404);
         } else if (!Hash::check($request->password, $user->password)) {
             return response([
-            'message' => ['Password does not match for user: ' . $request->email]
+                'message' => [__('Password does not match for user: :email', ['email' => $request->email])]
             ], 404);
         }
 
         if (!Hash::check($request->password, $user->password)) {
             return response([
-                'message' => ['These credentials do not match our records.']
+                'message' => [__('These credentials do not match our records.')]
             ], 404);
         }
 
