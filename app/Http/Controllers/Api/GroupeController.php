@@ -105,7 +105,7 @@ class GroupeController extends Controller
 
     public function users(Groupe $groupe)
     {
-        return response()->json($groupe->users());
+        return response()->json($groupe->members());
     }
 
     public function user(Groupe $groupe, User $user)
