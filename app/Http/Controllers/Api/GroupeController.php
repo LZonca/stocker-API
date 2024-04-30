@@ -110,7 +110,7 @@ class GroupeController extends Controller
 
     public function user(Groupe $groupe, User $user)
     {
-        $user = $groupe->users()->find($user->id);
+        $user = $groupe->members()->find($user->id);
         if (!$user) {
             return response()->json(['message' => 'User not found.'], 404);
         }
