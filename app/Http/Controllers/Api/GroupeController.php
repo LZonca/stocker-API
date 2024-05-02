@@ -66,6 +66,52 @@ class GroupeController extends Controller
         return response()->json($groupe);
     }
 
+    public function groupStock($groupeId, Stock $stock)
+    {
+        $groupe = Groupe::find($groupeId);
+
+        if (!$groupe) {
+            return response()->json(['message' => __('Group not found.')], 404);
+        }
+
+        // Check if the stock is associated with the group
+        if ($stock->groupe_id != $groupe->id) {
+            return response()->json(['message' => __('This stock does not belong to this group.')], 404);
+        }
+
+        // Load the produits relationship on the stock
+        $stock->load('produits');
+
+        return response()->json($stock);
+    }
+
+    /*public function groupStockProduct($groupeId, Stock $stock, Produit $produit)
+    {
+        $groupe = Groupe::find($groupeId);
+
+        if (!$groupe) {
+            return response()->json(['message' => __('Group not found.')], 404);
+        }
+
+        // Check if the stock is associated with the group
+        if ($stock->groupe_id != $groupe->id) {
+            return response()->json(['message' => __('This stock does not belong to this group.')], 404);
+        }
+
+        // Load the produits relationship on the stock
+        $stock->load('produits');
+
+        // Check if the product is associated with the stock
+        if (!$stock->produits->contains($produit->id)) {
+            return response()->json(['message' => __('This product does not exist in this stock.')], 404);
+        }
+
+        // Load the stock relationship on the product
+        $produit->load('stock');
+
+        return response()->json($produit);
+    }*/
+
     /**
      * Show the form for editing the specified resource.
      */
@@ -100,9 +146,41 @@ class GroupeController extends Controller
     public function destroy($groupeId)
     {
         $groupe = Groupe::find($groupeId);
+
+        // Dissociate the stocks from the group
+        foreach ($groupe->stocks as $stock) {
+            $groupe->stocks()->detach($stock->id);
+        }
+
+        // Delete the group
         $groupe->delete();
+
         return response()->json(null, 204);
     }
+
+    public function removeStockFromGroup($groupeId, Stock $stock)
+    {
+        $groupe = Groupe::find($groupeId);
+
+        if (!$groupe) {
+            return response()->json(['message' => __('Group not found.')], 404);
+        }
+
+        // Check if the stock is associated with the group
+        if ($stock->groupe_id != $groupe->id) {
+            return response()->json(['message' => __('This stock does not belong to this group.')], 404);
+        }
+
+        // Dissociate the stock from the group
+        $stock->groupe_id = null;
+        $stock->save();
+
+        // Delete the stock
+        $stock->delete();
+
+        return response()->json(['message' => __('Stock removed successfully')], 204);
+    }
+
 
     public function users(Groupe $groupe)
     {
@@ -209,7 +287,7 @@ class GroupeController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'code' => 'required',
+            'code' => 'nullable|max:255',
             'nom' => 'required', // Ensure that 'nom' is always provided
             // Add other validation rules as needed
         ]);

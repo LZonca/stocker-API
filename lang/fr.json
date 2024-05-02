@@ -238,5 +238,7 @@
     "Product removed from the stock successfully.": "Produit retiré du stock avec succès.",
     "Product quantity decreased successfully.": "Quantité du stock réduite.",
     "Product removed from the stock": "Produit retiré du stock",
-    "Stock removed successfully.": "Stock supprimé avec succès."
+    "Stock removed successfully.": "Stock supprimé avec succès.",
+    "The new password cannot be the same as the old password.": "Le nouveau mot de passe ne peut pas être identique à l'ancien mot de passe.",
+    "The password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character.": "Le mot de passe doit contenir au moins une lettre minuscule, une lettre majuscule, un chiffre et un caractère spécial."
 }

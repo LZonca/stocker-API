@@ -94,6 +94,16 @@ class StockController extends Controller
     public function destroy(Request $request, Stock $stock)
     {
         $stock = $request->user()->stocks->find($stock->id);
+
+        // Check if the stock exists
+        if (!$stock) {
+            return response()->json(['message' => __('Stock not found.')], 404);
+        }
+
+        // Dissociate the stock from the user
+        $request->user()->stocks()->detach($stock->id);
+
+        // Delete the stock
         $stock->delete();
 
         return response()->json(['message' => __('Stock removed successfully')], 204);
@@ -193,9 +203,14 @@ class StockController extends Controller
     /**
      * Display the products of a user's stock.
      */
-    public function content(User $user, Stock $stock)
+    public function content(Stock $stock)
     {
-        $stock = $user->stocks->find($stock->id);
+
+        if (!$stock) {
+            return response()->json(['message' => __('Stock not found.')], 404);
+        }
+
+
         $products = $stock->produits->map(function ($product) {
             return [
                 'id' => $product->id,

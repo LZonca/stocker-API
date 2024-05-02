@@ -23,11 +23,26 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $messages = [
+            'password.min' => __('The password must be at least 12 characters.'),
+            'password.lowercase' => __('The password must contain at least one lowercase letter.'),
+            'password.uppercase' => __('The password must contain at least one uppercase letter.'),
+            'password.digit' => __('The password must contain at least one digit.'),
+            'password.special' => __('The password must contain at least one special character.'),
+        ];
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:8',
-        ]);
+            'password' => [
+                'sometimes',
+                'required',
+                'min:12',
+                'lowercase' => 'regex:/[a-z]/',      // must contain at least one lowercase letter
+                'uppercase' => 'regex:/[A-Z]/',      // must contain at least one uppercase letter
+                'digit' => 'regex:/[0-9]/',          // must contain at least one digit
+                'special' => 'regex:/[@$!%*#?&]/',
+            ],
+        ], $messages);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
@@ -63,25 +78,51 @@ class UserController extends Controller
      */
     public function update(Request $request)
     {
+        $messages = [
+            'password.regex' => __('The password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character.'),
+        ];
+
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|required|max:255',
             'email' => 'sometimes|required|email|unique:users,email,'.$request->user()->id,
-            'password' => 'sometimes|required|min:8',
-        ]);
+            'password' => [
+                'sometimes',
+                'required',
+                'min:12',
+                'regex:/[a-z]/',      // must contain at least one lowercase letter
+                'regex:/[A-Z]/',      // must contain at least one uppercase letter
+                'regex:/[0-9]/',      // must contain at least one digit
+                'regex:/[@$!%*#?&]/', // must contain a special character
+                function ($attribute, $value, $fail) use ($request) {
+                    if (Hash::check($value, $request->user()->password)) {
+                        $fail(__('The new password cannot be the same as the old password.'));
+                    }
+                },
+            ],
+        ], $messages);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $request->user()->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        $updateData = [];
+
+        if ($request->has('name')) {
+            $updateData['name'] = $request->name;
+        }
+
+        if ($request->has('email')) {
+            $updateData['email'] = $request->email;
+        }
+
+        if ($request->has('password')) {
+            $updateData['password'] = Hash::make($request->password);
+        }
+
+        $request->user()->update($updateData);
 
         return response()->json($request->user());
     }
-
     /**
      * Remove the specified resource from storage.
      */
