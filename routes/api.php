@@ -71,7 +71,7 @@ Route::middleware(['set-locale'])->group(function () {
                 Route::patch('/groups/{groupe}', [GroupeController::class, 'update']); // Mettre à jour un groupe spécifique
                 Route::delete('/groups/{groupe}', [GroupeController::class, 'destroy']); // Supprimer un groupe spécifique
                 Route::post('/groups/{groupe}/add', [GroupeController::class, 'associateUser'])->name('api.user.associateUser'); // Associer un utilisateur à un groupe
-                Route::delete('/groups/{groupe}/remove', [GroupeController::class, 'dissociateUser'])->name('api.user.dissociateUser'); // Dissocier un utilisateur d'un groupe
+                Route::patch('/groups/{groupe}/users/{user}', [GroupeController::class, 'dissociateUser'])->name('api.user.dissociateUser'); // Dissocier un utilisateur d'un groupe
             });
 
             Route::get('/groups/{groupe}/users', [GroupeController::class, 'users'])->name('api.group.users'); // Obtenir tous les utilisateurs d'un groupe spécifique

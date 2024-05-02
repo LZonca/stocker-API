@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Groupe;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,7 @@ class CheckGroupOwnership
      */
     public function handle(Request $request, Closure $next)
     {
-        $group = $request->route('groupe');
+        $group = Groupe::findOrFail($request->route('groupe'));
 
         if ($group->proprietaire_id == $request->user()->id) {
             return $next($request);

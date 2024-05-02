@@ -97,15 +97,17 @@ class GroupeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Groupe $groupe)
+    public function destroy($groupeId)
     {
+        $groupe = Groupe::find($groupeId);
         $groupe->delete();
         return response()->json(null, 204);
     }
 
     public function users(Groupe $groupe)
     {
-        return response()->json($groupe->members());
+
+        return response()->json($groupe->members()->get());
     }
 
     public function user(Groupe $groupe, User $user)
@@ -141,7 +143,7 @@ class GroupeController extends Controller
         return response()->json(['message' => __('Stock added to the group successfully.')], 200);
     }
 
-    public function associateUser(Request $request, Groupe $groupe)
+    public function associateUser(Request $request, $groupeid)
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email|exists:users,email',
@@ -151,10 +153,13 @@ class GroupeController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        $groupe = Groupe::find($groupeid);
+
         $user = User::where('email', $request->email)->first();
+
         // Check if the user is already associated with the group
         if ($user->groupes()->where('groupe_id', $groupe->id)->exists()) {
-            return response()->json(['message' => __('User is already associated with this group.')], 409);
+            return response()->json(['message' => __('User is already a member of this group.')], 409);
         }
 
         // Associate the user with the group
@@ -163,15 +168,26 @@ class GroupeController extends Controller
         return response()->json(['message' => __('User has been added to the group successfully!')], 200);
     }
 
-    public function dissociateUser(User $user, Groupe $group)
+    public function dissociateUser(Request $request, $userId, $groupeId)
     {
+        // Manually retrieve the Groupe model instance
+        $groupe = Groupe::findOrFail($groupeId);
+
+        // Find the user by ID
+        $user = User::find($userId);
+
+        // Check if the user exists
+        if (!$user) {
+            return response()->json(['message' => __('User not found.')], 404);
+        }
+
         // Check if the user is associated with the group
-        if (!$user->groupes()->where('groupe_id', $group->id)->exists()) {
-            return response()->json(['message' => __('User is not a member of this group.')], 404);
+        if (!$groupe->members->contains('id', $request->user()->id)){
+            return response()->json(['message' => __('You are not a member of this group.')], 403);
         }
 
         // Dissociate the user from the group
-        $user->groupes()->detach($group);
+        $user->groupes()->detach($groupe);
 
         return response()->json(['message' => __('User has been removed from the group.')], 200);
     }
