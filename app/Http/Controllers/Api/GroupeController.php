@@ -246,13 +246,10 @@ class GroupeController extends Controller
         return response()->json(['message' => __('User has been added to the group successfully!')], 200);
     }
 
-    public function dissociateUser(Request $request, $userId, $groupeId)
+    public function dissociateUser(Request $request, $groupeId, User $user)
     {
         // Manually retrieve the Groupe model instance
         $groupe = Groupe::findOrFail($groupeId);
-
-        // Find the user by ID
-        $user = User::find($userId);
 
         // Check if the user exists
         if (!$user) {
