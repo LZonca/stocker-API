@@ -152,6 +152,10 @@ class GroupeController extends Controller
             $groupe->stocks()->detach($stock->id);
         }
 
+        foreach ($groupe->members as $member) {
+            $groupe->members()->detach($member->id);
+        }
+
         // Delete the group
         $groupe->delete();
 
