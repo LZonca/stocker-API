@@ -34,6 +34,8 @@ Route::middleware(['set-locale'])->group(function () {
             Route::get('/user/groups', [UserController::class, 'groups']); // Obtenir tous les groupes d'un utilisateur spécifique
             Route::post('/user/groups', [GroupeController::class, 'store']); // Créer un nouveau groupe au nom de l'utilisateur
 
+            Route::patch('/user/groups/{groupe}/leave', [UserController::class, 'leaveGroup']);  // Obtenir un groupe spécifique
+
             // Routes de stock
             Route::get('/user/stocks', [StockController::class, 'userStocks'])->name('api.stock.userStocks  '); // Obtenir tous les stocks d'un utilisateur spécifique
             /*Route::get('/users/{user}/stocks/all', [StockController::class, 'userStocks'])->name('api.stock.userStocks'); // Obtenir tous les stocks d'un utilisateur spécifique*/

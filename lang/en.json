@@ -240,5 +240,6 @@
     "Stock removed successfully.": "Stock removed successfully.",
     "The new password cannot be the same as the old password.": "The new password cannot be the same as the old password.",
     "The password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character.": "The password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character.",
-    "You are the owner of this group and cannot be dissociated.": "You are the owner of this group and cannot be dissociated from your own group."
+    "You are the owner of this group and cannot be dissociated.": "You are the owner of this group and cannot be dissociated from your own group.",
+    "Successfully left the group.": "Successfully left the group."
 }

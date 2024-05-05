@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Groupe;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -172,13 +173,25 @@ class UserController extends Controller
 
         return response($response, 201);
     }
-/*    /**
-     * Display the stocks of every user.
-     */
-    /*public function stocks(User $user)
+    public function leaveGroup(Request $request, $groupId)
     {
-        return response()->json($user->stocks);
-    }*/
+        // Retrieve the group by its ID
+        $group = Groupe::find($groupId);
 
+        // Check if the group exists
+        if (!$group) {
+            return response()->json(['message' => __('Group not found.')], 404);
+        }
+
+        // Check if the user is a member of the group
+        if (!$request->user()->groupes()->where('groupes.id', $group->id)->exists()) {
+            return response()->json(['message' => __('You are not a member of this group.')], 403);
+        }
+
+        // Detach the user from the group
+        $request->user()->groupes()->detach($group->id);
+
+        return response()->json(['message' => __('Successfully left the group.')], 200);
+    }
 
 }
