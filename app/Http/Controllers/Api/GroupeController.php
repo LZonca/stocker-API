@@ -260,6 +260,11 @@ class GroupeController extends Controller
             return response()->json(['message' => __('User not found.')], 404);
         }
 
+        // Check if the user is the owner of the group
+        if ($groupe->proprietaire_id == $user->id) {
+            return response()->json(['message' => __('You are the owner of this group and cannot be dissociated.')], 403);
+        }
+
         // Check if the user is associated with the group
         if (!$groupe->members->contains('id', $request->user()->id)){
             return response()->json(['message' => __('You are not a member of this group.')], 403);
