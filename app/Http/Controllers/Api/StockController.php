@@ -111,13 +111,11 @@ class StockController extends Controller
 
     public function addProduct(Stock $stock, Request $request)
     {
-
         $validator = Validator::make($request->all(), [
-            'code' => 'nullable|string|max:255',
-            'nom' => 'required|string|max:255',
+            'code' => 'required_without_all:nom,produit_id|string|max:255',
+            'nom' => 'required_without_all:code,produit_id|string|max:255',
+            'produit_id' => 'required_without_all:code,nom|integer',
             'image' => 'nullable|image',
-            // Ensure that 'nom' is always provided
-            // Add other validation rules as needed
         ]);
 
         if ($validator->fails()) {
@@ -126,13 +124,20 @@ class StockController extends Controller
 
         $stock = $request->user()->stocks->find($stock->id);
 
-
         // Check if the stock exists
         if (!$stock) {
             return response()->json(['message' => __('Stock not found.')], 404);
         }
 
-        $product = Produit::where('code', $request->code)->first();
+        // Find the product by code, id or name
+        $product = null;
+        if ($request->has('code')) {
+            $product = Produit::where('code', $request->code)->first();
+        } elseif ($request->has('produit_id')) {
+            $product = Produit::find($request->produit_id);
+        } elseif ($request->has('nom')) {
+            $product = Produit::where('nom', $request->nom)->first();
+        }
 
         if (!$product) {
             // The product is not found, create it

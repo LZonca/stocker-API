@@ -26,14 +26,11 @@ Route::middleware(['set-locale'])->group(function () {
 // Routes utilisateurs
         /*Route::get('/users', [UserController::class, 'index']); // Obtenir tous les utilisateurs*/
 
-
-
         Route::middleware(['user-mgroup'])->group(function () {
             Route::patch('/user', [UserController::class, 'update']); // Mettre à jour un utilisateur spécifique
             Route::delete('/users/{user}', [UserController::class, 'destroy']); // Supprimer un utilisateur spécifique
             Route::get('/user/groups', [UserController::class, 'groups']); // Obtenir tous les groupes d'un utilisateur spécifique
             Route::post('/user/groups', [GroupeController::class, 'store']); // Créer un nouveau groupe au nom de l'utilisateur
-
             Route::patch('/user/groups/{groupe}/leave', [UserController::class, 'leaveGroup']);  // Obtenir un groupe spécifique
 
             // Routes de stock
