@@ -108,6 +108,36 @@ class StockController extends Controller
 
         return response()->json(['message' => __('Stock removed successfully')], 204);
     }
+    public function updateProductQuantity(Request $request, Stock $stock, Produit $product)
+    {
+        $validator = Validator::make($request->all(), [
+            'quantite' => 'required|integer|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $stock = $request->user()->stocks->find($stock->id);
+
+        // Check if the stock exists
+        if (!$stock) {
+            return response()->json(['message' => __('Stock not found.')], 404);
+        }
+
+        // Check if the product is in the stock
+        $pivot = $stock->produits()->where('produit_id', $product->id)->first();
+
+        if (!$pivot) {
+            return response()->json(['message' => __('This product does not exist in this stock.')], 404);
+        }
+
+        // Update the product quantity
+        $stock->produits()->updateExistingPivot($product->id, ['quantite' => $request->quantite]);
+
+        return response()->json(['message' => __('Product quantity updated successfully.')], 200);
+    }
+
 
     public function addProduct(Stock $stock, Request $request)
     {

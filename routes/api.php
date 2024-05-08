@@ -45,7 +45,7 @@ Route::middleware(['set-locale'])->group(function () {
             Route::post('/user/stocks/{stock}/produits', [StockController::class, 'addProduct'])->name('api.stock.addProduct'); // Ajouter un produit à un stock spécifique d'un utilisateur spécifique
             Route::get('/user/stocks/{stock}/produits', [StockController::class, 'content'])->name('api.stock.content'); // Obtenir tous les produits d'un stock spécifique d'un utilisateur spécifique
             Route::delete('/user/stocks/{stock}/produits/{product}', [StockController::class, 'removeProductFromUserStock'])->name('api.user.stock.removeProduct'); // Supprimer un produit d'un stock spécifique d'un utilisateur spécifique
-            Route::patch('/user/stocks/{stock}/produits/{product}/remove', [StockController::class, 'decreaseProductQuantityInUserStock'])->name('api.user.stock.decreaseProductQuantity'); // Diminuer la quantité d'un produit spécifique dans un stock spécifique d'un utilisateur spécifique
+            Route::patch('/user/stocks/{stock}/produits/{product}', [StockController::class, 'updateProductQuantity'])->name('api.user.stock.updateProductQuantity'); // Diminuer la quantité d'un produit spécifique dans un stock spécifique d'un utilisateur spécifique
         });
 
 // Routes catégories
