@@ -100,8 +100,9 @@ class StockController extends Controller
             return response()->json(['message' => __('Stock not found.')], 404);
         }
 
-        // Dissociate the stock from the user
-        $request->user()->stocks()->detach($stock->id);
+        // Detach all the associated products
+        $stock->produits()->detach();
+        $stock->proprietaire()->dissociate();
 
         // Delete the stock
         $stock->delete();
@@ -142,9 +143,11 @@ class StockController extends Controller
     public function addProduct(Stock $stock, Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'code' => 'required_without_all:nom,produit_id|string|max:255',
-            'nom' => 'required_without_all:code,produit_id|string|max:255',
-            'produit_id' => 'required_without_all:code,nom|integer',
+
+            'nom' => 'required|string|max:255',
+            'code' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            /*'produit_id' => 'required_without_all:code,nom|integer',*/
             'image' => 'nullable|image',
         ]);
 
@@ -171,6 +174,17 @@ class StockController extends Controller
 
         if (!$product) {
             // The product is not found, create it
+            /*$productData = $request->all();
+
+            // Handle image upload
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = time() . '.' . $image->getClientOriginalExtension();
+                $imagePath = $image->storeAs('images', $imageName, 'public');
+                $productData['image'] = $imagePath;
+            }
+
+            $product = Produit::create($productData);*/
             $product = Produit::create($request->all());
         }
 
@@ -180,7 +194,7 @@ class StockController extends Controller
         if ($pivot) {
             // The product is already in the stock, increment the quantity
             $stock->produits()->updateExistingPivot($product->id, ['quantite' => DB::raw('quantite + 1')]);
-            return response()->json(['message' => __('Product quantity incremented.')], 200);
+            return response()->json(['message' => __('Product quantity incremented.')], 202);
         } else {
             // The product is not in the stock, add it
             $stock->produits()->attach($product->id, ['quantite' => 1]);
