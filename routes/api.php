@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\GroupeController;
 use App\Http\Controllers\Api\StockController;
 use App\Http\Controllers\Api\UserController;
+use App\Models\UserProduit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +21,26 @@ Route::middleware(['set-locale'])->group(function () {
         // Obtenir l'utilisateur authentifié
         Route::get('/user', function (Request $request) {
 
-            return response()->json($request->user()->load('stocks.produits', 'groupes.stocks.produits', 'groupes.members', 'groupes.proprietaire'));
+            $request->user()->load('stocks.produits', 'groupes.stocks.produits', 'groupes.members', 'groupes.proprietaire');
+
+            // Fetch the user-specific information for each product
+            foreach ( $request->user()->stocks as $stock) {
+                foreach ($stock->produits as $produit) {
+                    $userProduit = UserProduit::where('user_id', $request->user()->id)
+                        ->where('produit_id', $produit->id)
+                        ->first();
+
+                    // If user-specific information exists, use it to override the product details
+                    if ($userProduit) {
+                        $produit->nom = $userProduit->custom_name ?? $produit->nom;
+                        $produit->code = $userProduit->custom_code ?? $produit->code;
+                        $produit->description = $userProduit->custom_description ?? $produit->description;
+                        $produit->image = $userProduit->custom_image ?? $produit->image;
+                    }
+                }
+            }
+
+            return response()->json( $request->user());
         });
 
 // Routes utilisateurs
@@ -43,9 +63,10 @@ Route::middleware(['set-locale'])->group(function () {
 
             // Routes produits
             Route::post('/user/stocks/{stock}/produits', [StockController::class, 'addProduct'])->name('api.stock.addProduct'); // Ajouter un produit à un stock spécifique d'un utilisateur spécifique
+            Route::patch('/user/stocks/{stock}/produits/{product}', [StockController::class, 'editProductInUserStock'])->name('api.user.stock.editProduct');
             Route::get('/user/stocks/{stock}/produits', [StockController::class, 'content'])->name('api.stock.content'); // Obtenir tous les produits d'un stock spécifique d'un utilisateur spécifique
             Route::delete('/user/stocks/{stock}/produits/{product}', [StockController::class, 'removeProductFromUserStock'])->name('api.user.stock.removeProduct'); // Supprimer un produit d'un stock spécifique d'un utilisateur spécifique
-            Route::patch('/user/stocks/{stock}/produits/{product}', [StockController::class, 'updateProductQuantity'])->name('api.user.stock.updateProductQuantity'); // Diminuer la quantité d'un produit spécifique dans un stock spécifique d'un utilisateur spécifique
+            Route::patch('/user/stocks/{stock}/produits/{product}/quantite', [StockController::class, 'updateProductQuantity'])->name('api.user.stock.updateProductQuantity'); // Diminuer la quantité d'un produit spécifique dans un stock spécifique d'un utilisateur spécifique
         });
 
 // Routes catégories
@@ -83,9 +104,12 @@ Route::middleware(['set-locale'])->group(function () {
             Route::get('/groups/{groupe}/stocks/{stock}', [GroupeController::class, 'groupStock'])->name('api.group.stock'); // Obtenir un stock spécifique d'un groupe spécifique
             Route::get('/groups/{groupe}/stocks/{stock}/produits', [GroupeController::class, 'groupStockProducts'])->name('api.group.stock.products'); // Obtenir tous les produits d'un stock spécifique d'un groupe spécifique
 /*            Route::get('/groups/{groupe}/stocks/{stock}/produits/{product}', [GroupeController::class, 'groupStockProduct'])->name('api.group.stock.product'); // Obtenir un produit spécifique d'un stock spécifique d'un groupe spécifique*/
+            Route::patch('/groups/{groupe}/stocks/{stock}', [GroupeController::class, 'editProductInGroupeStock'])->name('api.group.stock.update'); // Mettre à jour un stock spécifique d'un groupe spécifique
             Route::post('/groups/{groupe}/stocks/{stock}/produits', [GroupeController::class, 'addProduct'])->name('api.group.stock.addProduct'); // Ajouter un produit à un stock spécifique d'un groupe spécifique
             Route::delete('/groups/{groupe}/stocks/{stock}/produits/{product}', [GroupeController::class, 'removeProductFromGroupStock'])->name('api.group.stock.removeProduct'); // Supprimer un produit d'un stock spécifique d'un groupe spécifique
-            Route::patch('/groups/{groupe}/stocks/{stock}/produits/{product}/remove', [GroupeController::class, 'decreaseProductQuantityInGroupStock'])->name('api.group.stock.decreaseProductQuantity'); // Diminuer la quantité d'un produit spécifique dans un stock spécifique d'un groupe spécifique
+            Route::patch('/groups/{groupe}/stocks/{stock}/produits/{product}', [GroupeController::class, 'editProductInGroupeStock'])->name('api.group.stock.removeProduct'); // Supprimer un produit d'un stock spécifique d'un groupe spécifique
+            Route::patch('/groups/{groupe}/stocks/{stock}/produits/{product}/quantite', [GroupeController::class, 'updateProductQuantity'])->name('api.group.stock.decreaseProductQuantity'); // Diminuer la quantité d'un produit spécifique dans un stock spécifique d'un groupe spécifique
+
         });
     });
 });

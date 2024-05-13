@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Groupe;
 use App\Models\User;
+use App\Models\UserProduit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -138,8 +139,32 @@ class UserController extends Controller
     {
         $groups = $request->user()->groupes;
 
-        // Eager load the stocks, proprietaire, and members relationships
-        $groups->load('stocks', 'proprietaire', 'members');
+        // Eager load the proprietaire, members and userProduits relationships
+        $groups->load([
+            'proprietaire',
+            'members',
+            'stocks.produits' => function ($query) use ($request) {
+                $query->with(['userProduits' => function ($query) use ($request) {
+                    $query->where('user_id', $request->user()->id);
+                }]);
+            },
+        ]);
+
+        // Iterate over each group
+        foreach ($groups as $group) {
+            // Iterate over each stock in the group
+            foreach ($group->stocks as $stock) {
+                // Iterate over each produit in the stock
+                foreach ($stock->produits as $produit) {
+                    // If user-specific information exists, use it to override the product details
+                    if ($produit->userProduits) {
+                        $produit->nom = $produit->userProduits->custom_name ?? $produit->nom;
+                        $produit->description = $produit->userProduits->custom_description ?? $produit->description;
+                        $produit->image = $produit->userProduits->custom_image ?? $produit->image;
+                    }
+                }
+            }
+        }
 
         return response()->json($groups);
     }

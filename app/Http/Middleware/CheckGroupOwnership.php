@@ -17,9 +17,10 @@ class CheckGroupOwnership
      */
     public function handle(Request $request, Closure $next)
     {
-        $group = Groupe::findOrFail($request->route('groupe'));
+        $groupe=$request->route('groupe');
 
-        if ($group->proprietaire_id == $request->user()->id) {
+
+        if ($groupe->proprietaire_id == $request->user()->id) {
             return $next($request);
         }
 

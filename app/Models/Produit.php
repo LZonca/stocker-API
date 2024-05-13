@@ -19,4 +19,9 @@ class Produit extends Model
     {
         return $this->belongsToMany(Stock::class);
     }
+
+    public function userProduits()
+    {
+        return $this->hasOne(UserProduit::class);
+    }
 }

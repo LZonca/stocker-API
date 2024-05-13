@@ -7,6 +7,7 @@ use App\Models\Groupe;
 use App\Models\Produit;
 use App\Models\Stock;
 use App\Models\User;
+use App\Models\UserProduit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -37,7 +38,7 @@ class GroupeController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'nom' => 'required|unique:groupes|max:255',
+            'nom' => 'required|max:255',
             'image' => 'nullable|image',
         ]);
 
@@ -61,12 +62,31 @@ class GroupeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Groupe $groupe)
+    public function show(Request $request, Groupe $groupe)
     {
+        $groupe->load('stocks.produits', 'members', 'proprietaire');
+
+        // Fetch the user-specific information for each product
+        foreach ($groupe->stocks as $stock) {
+            foreach ($stock->produits as $produit) {
+                $userProduit = UserProduit::where('user_id', $request->user()->id)
+                    ->where('produit_id', $produit->id)
+                    ->first();
+
+                // If user-specific information exists, use it to override the product details
+                if ($userProduit) {
+                    $produit->nom = $userProduit->custom_name ?? $produit->nom;
+                    $produit->code = $userProduit->custom_code ?? $produit->code;
+                    $produit->description = $userProduit->custom_description ?? $produit->description;
+                    $produit->image = $userProduit->custom_image ?? $produit->image;
+                }
+            }
+        }
+
         return response()->json($groupe);
     }
 
-    public function groupStock($groupeId, Stock $stock)
+    public function groupStock($groupeId, Stock $stock, Request $request)
     {
         $groupe = Groupe::find($groupeId);
 
@@ -81,6 +101,24 @@ class GroupeController extends Controller
 
         // Load the produits relationship on the stock
         $stock->load('produits');
+
+        // Iterate over each product in the stock
+        foreach ($stock->produits as $product) {
+            // Find the UserProduit entry for the given user and product
+            $userProduit = UserProduit::where('user_id', $request->user()->id)
+                ->where('produit_id', $product->id)
+                ->first();
+
+            // Check if the UserProduit entry exists
+            if ($userProduit) {
+                // Update the UserProduit entry with the new product details
+                $userProduit->custom_name = $request->nom ?? $userProduit->custom_name;
+                $userProduit->custom_code = $request->code ?? $userProduit->custom_code;
+                $userProduit->custom_description = $request->description ?? $userProduit->custom_description;
+                $userProduit->custom_image = $request->image ?? $userProduit->custom_image;
+                $userProduit->save();
+            }
+        }
 
         return response()->json($stock);
     }
@@ -143,13 +181,16 @@ class GroupeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy($groupeId)
     {
         $groupe = Groupe::find($groupeId);
 
-        // Dissociate the stocks from the group
+        // Delete the stocks associated with the group
         foreach ($groupe->stocks as $stock) {
-            $groupe->stocks()->detach($stock->id);
+            $stock->delete();
         }
 
         foreach ($groupe->members as $member) {
@@ -162,27 +203,15 @@ class GroupeController extends Controller
         return response()->json(null, 204);
     }
 
-    public function removeStockFromGroup($groupeId, Stock $stock)
+    public function removeStockFromGroup(Request $request, Groupe $groupe, Stock $stock)
     {
-        $groupe = Groupe::find($groupeId);
-
-        if (!$groupe) {
-            return response()->json(['message' => __('Group not found.')], 404);
+        // Check if the stock belongs to the group
+        if ($groupe->stocks->contains($stock)) {
+            // Delete the stock
+            $stock->delete();
         }
 
-        // Check if the stock is associated with the group
-        if ($stock->groupe_id != $groupe->id) {
-            return response()->json(['message' => __('This stock does not belong to this group.')], 404);
-        }
-
-        // Dissociate the stock from the group
-        $stock->groupe_id = null;
-        $stock->save();
-
-        // Delete the stock
-        $stock->delete();
-
-        return response()->json(['message' => __('Stock removed successfully')], 204);
+        return response()->json(['message' => __('Successfully removed the stock from the group.')], 200);
     }
 
 
@@ -201,6 +230,54 @@ class GroupeController extends Controller
         return response()->json($user);
     }
 
+    public function editProductInGroupeStock(Request $request, Groupe $groupe, Stock $stock, Produit $product)
+    {
+        // Validate the request data
+        $validator = Validator::make($request->all(), [
+            'code' => 'sometimes|required|string|max:255',
+            'nom' => 'sometimes|required|string|max:255',
+            'description' => 'sometimes|required|string',
+            'image' => 'sometimes|required|string',
+            // Add other validation rules as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        // Fetch the stock from the group's stocks
+        $stock = $groupe->stocks->find($stock->id);
+
+        // Check if the stock exists
+        if (!$stock) {
+            return response()->json(['message' => __('Stock not found or does not belong to the group.')], 404);
+        }
+
+        // Check if the product is in the stock
+        $productInStock = $stock->produits->contains($product->id);
+        if (!$productInStock) {
+            return response()->json(['message' => __('This product does not exist in this stock.')], 404);
+        }
+
+        // Find the UserProduit entry for the given user and product
+        $userProduit = UserProduit::where('user_id', $request->user()->id)
+            ->where('produit_id', $product->id)
+            ->first();
+
+        // Check if the UserProduit entry exists
+        if (!$userProduit) {
+            return response()->json(['message' => __('No custom product information found.')], 404);
+        }
+
+        // Update the UserProduit entry with the new product details
+        $userProduit->custom_name = $request->nom ?? $userProduit->custom_name;
+        $userProduit->custom_description = $request->description ?? $userProduit->custom_description;
+        $userProduit->custom_code = $request->code ?? $userProduit->custom_code;
+        $userProduit->custom_image = $request->image ?? $userProduit->custom_image;
+        $userProduit->save();
+
+        return response()->json(['message' => __('Product updated successfully.')], 200);
+    }
 
     public function groupStocks(Groupe $groupe)
     {
@@ -218,7 +295,7 @@ class GroupeController extends Controller
         }
         $stock = new Stock;
         $stock->nom = $request->nom;
-        $stock->proprietaire_id = $request->user()->id;
+        $stock->groupe_id = $groupe->id;
         $stock->groupe()->associate($groupe);
         $stock->save();
 
@@ -276,7 +353,7 @@ class GroupeController extends Controller
         return response()->json(['message' => __('User has been removed from the group.')], 200);
     }
 
-    public function groupStockProducts(Groupe $groupe, Stock $stock)
+    public function groupStockProducts(Request $request, Groupe $groupe, Stock $stock)
     {
         // Check if the stock is associated with the group
         if ($stock->groupe_id != $groupe->id) {
@@ -286,16 +363,39 @@ class GroupeController extends Controller
         // Get the products associated with the stock
         $products = $stock->produits;
 
-        return response()->json($products);
+        // Prepare an array to hold the products with user-specific information
+        $productsWithUserSpecificInfo = [];
+
+        // Iterate over each product in the stock
+        foreach ($products as $product) {
+            // Find the UserProduit entry for the given user and product
+            $userProduit = UserProduit::where('user_id', $request->user()->id)
+                ->where('produit_id', $product->id)
+                ->first();
+
+            // If user-specific information exists, use it to override the product details
+            if ($userProduit) {
+                $product->nom = $userProduit->custom_name ?? $product->nom;
+                $product->description = $userProduit->custom_description ?? $product->description;
+                $product->image = $userProduit->custom_image ?? $product->image;
+            }
+
+            // Add the product with user-specific information to the array
+            $productsWithUserSpecificInfo[] = $product;
+        }
+
+        return response()->json($productsWithUserSpecificInfo);
     }
+
+
 
     public function addProduct(Groupe $groupe, Stock $stock, Request $request)
     {
-
         $validator = Validator::make($request->all(), [
-            'code' => 'nullable|max:255',
-            'nom' => 'required', // Ensure that 'nom' is always provided
-            // Add other validation rules as needed
+            'nom' => 'required|string|max:255',
+            'code' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image',
         ]);
 
         if ($validator->fails()) {
@@ -309,7 +409,13 @@ class GroupeController extends Controller
             return response()->json(['message' => __('Stock not found.')], 404);
         }
 
-        $product = Produit::where('nom', $request->nom)->first();
+        // Find the product by code, id or name
+        $product = null;
+        if ($request->has('code')) {
+            $product = Produit::where('code', $request->code)->first();
+        } elseif ($request->has('nom')) {
+            $product = Produit::where('nom', $request->nom)->first();
+        }
 
         if (!$product) {
             // The product is not found, create it
@@ -317,17 +423,26 @@ class GroupeController extends Controller
         }
 
         // Check if the product's code is already in the stock
-        $pivot = $stock->produits()->where('code', $product->code)->first();
+        $pivot = $stock->produits()->where('nom', $product->nom)->first();
 
         if ($pivot) {
             // The product is already in the stock, increment the quantity
-            $pivot = $stock->produits()->where('produit_id', $product->id)->first();
-            $pivot->pivot->quantite += 1;
-            $pivot->pivot->save();
-            return response()->json(['message' => __('Product quantity incremented.')], 200);
+            $stock->produits()->updateExistingPivot($product->id, ['quantite' => DB::raw('quantite + 1')]);
+            return response()->json(['message' => __('Product quantity incremented.')], 202);
         } else {
             // The product is not in the stock, add it
             $stock->produits()->attach($product->id, ['quantite' => 1]);
+
+            // Create an entry in the user_produits table
+            $userProduit = new UserProduit;
+            $userProduit->user_id = $request->user()->id;
+            $userProduit->produit_id = $product->id;
+            $userProduit->custom_name = $request->nom;
+            $userProduit->custom_code = $request->code;
+            $userProduit->custom_image = $request->image;
+            $userProduit->custom_description = $request->description;
+            $userProduit->save();
+
             return response()->json(['message' => __('Product added to the stock successfully.')], 200);
         }
     }
@@ -350,7 +465,39 @@ class GroupeController extends Controller
         return response()->json(['message' => __('Product removed from the stock successfully.')], 200);
     }
 
-    public function decreaseProductQuantityInGroupStock(Groupe $groupe, Stock $stock, Produit $product)
+    public function updateProductQuantity(Request $request, Groupe $groupe, Stock $stock, Produit $product)
+    {
+        // Validate the request data
+        $validator = Validator::make($request->all(), [
+            'quantite' => 'required|integer|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        // Fetch the stock from the group's stocks
+        $stock = $groupe->stocks->find($stock->id);
+
+        // Check if the stock exists
+        if (!$stock) {
+            return response()->json(['message' => __('Stock not found or does not belong to the group.')], 404);
+        }
+
+        // Check if the product is in the stock
+        $pivot = $stock->produits()->where('produit_id', $product->id)->first();
+
+        if (!$pivot) {
+            return response()->json(['message' => __('This product does not exist in this stock.')], 404);
+        }
+
+        // Update the product quantity
+        $stock->produits()->updateExistingPivot($product->id, ['quantite' => $request->quantite]);
+
+        return response()->json(['message' => __('Product quantity updated successfully.')], 200);
+    }
+
+    /*public function decreaseProductQuantityInGroupStock(Groupe $groupe, Stock $stock, Produit $product)
     {
         // Check if the stock is associated with the group
         if ($stock->groupe_id != $groupe->id) {
@@ -373,5 +520,5 @@ class GroupeController extends Controller
             $stock->produits()->detach($product);
             return response()->json(['message' => __('Product removed from the stock')], 200);
         }
-    }
+    }*/
 }

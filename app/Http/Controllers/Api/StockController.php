@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Produit;
 use App\Models\Stock;
 use App\Models\User;
+use App\Models\UserProduit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -25,6 +26,19 @@ class StockController extends Controller
         $userStocks = $request->user()->stocks;
         foreach ($userStocks as $stock) {
             $stock->load('produits');
+            foreach ($stock->produits as $produit) {
+                $userProduit = UserProduit::where('user_id', $request->user()->id)
+                    ->where('produit_id', $produit->id)
+                    ->first();
+
+                // If user-specific information exists, use it to override the product details
+                if ($userProduit) {
+                    $produit->nom = $userProduit->custom_name ?? $produit->nom;
+                    $produit->code = $userProduit->custom_code ?? $produit->code;
+                    $produit->description = $userProduit->custom_description ?? $produit->description;
+                    $produit->image = $userProduit->custom_image ?? $produit->image;
+                }
+            }
         }
 
         $groupStocks = $request->user()->groupes->flatMap(function ($group) {
@@ -37,6 +51,57 @@ class StockController extends Controller
         $stocks = $userStocks->concat($groupStocks)->unique('id');
 
         return response()->json($stocks->values());
+    }
+
+
+
+    public function editProductInUserStock(Request $request, Stock $stock, Produit $product)
+    {
+        // Validate the request data
+        $validator = Validator::make($request->all(), [
+            'nom' => 'sometimes|required|string|max:255',
+            'code' => 'sometimes|nullable|string|max:255',
+            'description' => 'sometimes|nullable|string',
+            'image' => 'sometimes|nullable|string',
+            // Add other validation rules as needed
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        // Check if the stock belongs to the user
+        // Fetch the stock from the authenticated user's stocks
+        $stock = $request->user()->stocks->find($stock->id);
+
+        // Check if the stock exists
+        if (!$stock) {
+            return response()->json(['message' => __('Stock not found or does not belong to you.')], 404);
+        }
+        // Check if the product is in the stock
+        $pivot = $stock->produits()->where('produit_id', $product->id)->first();
+        if (!$pivot) {
+            return response()->json(['message' => __('This product does not exist in this stock.')], 404);
+        }
+
+        // Find the UserProduit entry for the given user and product
+        $userProduit = UserProduit::where('user_id', $request->user()->id)
+            ->where('produit_id', $product->id)
+            ->first();
+
+        // Check if the UserProduit entry exists
+        /*if (!$userProduit) {
+            return response()->json(['message' => __('No custom product information found.')], 404);
+        }*/
+
+        // Update the UserProduit entry with the new product details
+        $userProduit->custom_name = $request->nom ?? $userProduit->custom_name;
+        $userProduit->custom_description = $request->description ?? $userProduit->custom_description;
+        $userProduit->custom_code = $request->code ?? $userProduit->custom_code;
+        $userProduit->custom_image = $request->image ?? $userProduit->custom_image;
+        $userProduit->save();
+
+        return response()->json(['message' => __('Product updated successfully.')], 200);
     }
 
     /**
@@ -63,9 +128,22 @@ class StockController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, Stock $stock)
+    public function show(Request $request, Produit $produit)
     {
-        return response()->json($request->user()->stocks->find($stock->id));
+        // Fetch the user-specific information for the product
+        $userProduit = UserProduit::where('user_id', $request->user()->id)
+            ->where('produit_id', $produit->id)
+            ->first();
+
+        // If user-specific information exists, use it to override the product details
+        if ($userProduit) {
+            $produit->nom = $userProduit->custom_name ?? $produit->nom;
+            $produit->description = $userProduit->custom_description ?? $produit->description;
+            $userProduit->custom_code = $request->code ?? $userProduit->custom_code;
+            $produit->image = $userProduit->custom_image ?? $produit->image;
+        }
+
+        return response()->json($produit);
     }
 
     /**
@@ -109,6 +187,7 @@ class StockController extends Controller
 
         return response()->json(['message' => __('Stock removed successfully')], 204);
     }
+
     public function updateProductQuantity(Request $request, Stock $stock, Produit $product)
     {
         $validator = Validator::make($request->all(), [
@@ -143,11 +222,9 @@ class StockController extends Controller
     public function addProduct(Stock $stock, Request $request)
     {
         $validator = Validator::make($request->all(), [
-
             'nom' => 'required|string|max:255',
             'code' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            /*'produit_id' => 'required_without_all:code,nom|integer',*/
             'image' => 'nullable|image',
         ]);
 
@@ -166,25 +243,12 @@ class StockController extends Controller
         $product = null;
         if ($request->has('code')) {
             $product = Produit::where('code', $request->code)->first();
-        } elseif ($request->has('produit_id')) {
-            $product = Produit::find($request->produit_id);
         } elseif ($request->has('nom')) {
             $product = Produit::where('nom', $request->nom)->first();
         }
 
         if (!$product) {
             // The product is not found, create it
-            /*$productData = $request->all();
-
-            // Handle image upload
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $imageName = time() . '.' . $image->getClientOriginalExtension();
-                $imagePath = $image->storeAs('images', $imageName, 'public');
-                $productData['image'] = $imagePath;
-            }
-
-            $product = Produit::create($productData);*/
             $product = Produit::create($request->all());
         }
 
@@ -198,6 +262,17 @@ class StockController extends Controller
         } else {
             // The product is not in the stock, add it
             $stock->produits()->attach($product->id, ['quantite' => 1]);
+
+            // Create an entry in the user_produits table
+            $userProduit = new UserProduit;
+            $userProduit->user_id = $request->user()->id;
+            $userProduit->produit_id = $product->id;
+            $userProduit->custom_name = $request->nom;
+            $userProduit->custom_code = $request->code;
+            $userProduit->custom_image = $request->image;
+            $userProduit->custom_description = $request->description;
+            $userProduit->save();
+
             return response()->json(['message' => __('Product added to the stock successfully.')], 200);
         }
     }
@@ -244,7 +319,19 @@ class StockController extends Controller
             return response()->json(['message' => __('This product does not exist in this stock.')], 404);
         }
 
+        // Remove the product from the stock
         $stock->produits()->detach($product->id);
+
+        // Find the UserProduit entry for the given user and product
+        $userProduit = UserProduit::where('user_id', $request->user()->id)
+            ->where('produit_id', $product->id)
+            ->first();
+
+        // Check if the UserProduit entry exists
+        if ($userProduit) {
+            // Delete the UserProduit entry
+            $userProduit->delete();
+        }
 
         return response()->json(['message' => __('Product removed from the stock successfully.')], 200);
     }
@@ -252,15 +339,26 @@ class StockController extends Controller
     /**
      * Display the products of a user's stock.
      */
-    public function content(Stock $stock)
+    public function content(Request $request, Stock $stock)
     {
-
         if (!$stock) {
             return response()->json(['message' => __('Stock not found.')], 404);
         }
 
+        $products = $stock->produits->map(function ($product) use ($stock, $request) {
+            // Fetch the user-specific information for the product
+            $userProduit = UserProduit::where('user_id', $request->user()->id)
+                ->where('produit_id', $product->id)
+                ->first();
 
-        $products = $stock->produits->map(function ($product) {
+            // If user-specific information exists, use it to override the product details
+            if ($userProduit) {
+                $product->nom = $userProduit->custom_name ?? $product->nom;
+                $product->description = $userProduit->custom_description ?? $product->description;
+                $product->code = $userProduit->custom_code ?? $product->code;
+                $product->image = $userProduit->custom_image ?? $product->image;
+            }
+
             return [
                 'id' => $product->id,
                 'code' => $product->code,
@@ -269,7 +367,11 @@ class StockController extends Controller
                 'prix' => $product->prix,
                 'image' => $product->image,
                 'categorie_id' => $product->categorie_id,
-                'quantite' => $product->pivot->quantite,
+                'pivot' => [
+                    'stock_id' => $stock->id,
+                    'produit_id' => $product->id,
+                    'quantite' => $product->pivot->quantite,
+                ],
             ];
         });
 
