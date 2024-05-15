@@ -41,14 +41,8 @@ class StockController extends Controller
             }
         }
 
-        $groupStocks = $request->user()->groupes->flatMap(function ($group) {
-            return $group->stocks;
-        });
-        foreach ($groupStocks as $stock) {
-            $stock->load('produits');
-        }
 
-        $stocks = $userStocks->concat($groupStocks)->unique('id');
+        $stocks = $userStocks->unique('id');
 
         return response()->json($stocks->values());
     }

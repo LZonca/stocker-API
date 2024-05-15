@@ -34,7 +34,7 @@ class UserController extends Controller
         ];
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
-            'email' => 'required|email|unique:users',
+            'email' => 'required|email', // Removed unique:users
             'password' => [
                 'sometimes',
                 'required',
@@ -50,19 +50,29 @@ class UserController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        try {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
 
-        // Create a token for the user
-        $token = $user->createToken('api-token')->plainTextToken;
+            // Create a token for the user
+            $token = $user->createToken('api-token')->plainTextToken;
 
-        return response()->json([
-            'user' => $user,
-            'token' => $token
-        ], 201);
+            return response()->json([
+                'user' => $user,
+                'token' => $token
+            ], 201);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Catch the error if the email is a duplicate
+            if ($e->getCode() == 23000) { // 23000 is the SQLSTATE code for a unique constraint violation
+                return response()->json(['message' => __('The email has already been taken.')], 409);
+            }
+
+            // If the error is not due to a duplicate email, rethrow the exception
+            throw $e;
+        }
     }
 
 
@@ -80,13 +90,9 @@ class UserController extends Controller
      */
     public function update(Request $request)
     {
-        $messages = [
-            'password.regex' => __('The password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character.'),
-        ];
-
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|required|max:255',
-            'email' => 'sometimes|required|email|unique:users,email,'.$request->user()->id,
+            'email' => 'sometimes|required|email',
             'password' => [
                 'sometimes',
                 'required',
@@ -101,7 +107,7 @@ class UserController extends Controller
                     }
                 },
             ],
-        ], $messages);
+        ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
@@ -121,9 +127,18 @@ class UserController extends Controller
             $updateData['password'] = Hash::make($request->password);
         }
 
-        $request->user()->update($updateData);
+        try {
+            $request->user()->update($updateData);
+            return response()->json($request->user());
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Catch the error if the email is a duplicate
+            if ($e->getCode() == 23000) { // 23000 is the SQLSTATE code for a unique constraint violation
+                return response()->json(['message' => __('The email has already been taken.')], 409);
+            }
 
-        return response()->json($request->user());
+            // If the error is not due to a duplicate email, rethrow the exception
+            throw $e;
+        }
     }
     /**
      * Remove the specified resource from storage.

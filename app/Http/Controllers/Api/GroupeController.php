@@ -265,9 +265,9 @@ class GroupeController extends Controller
             ->first();
 
         // Check if the UserProduit entry exists
-        if (!$userProduit) {
+        /*if (!$userProduit) {
             return response()->json(['message' => __('No custom product information found.')], 404);
-        }
+        }*/
 
         // Update the UserProduit entry with the new product details
         $userProduit->custom_name = $request->nom ?? $userProduit->custom_name;
