@@ -1,66 +1,77 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Routes de l'API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Routes d'Authentification
 
-## About Laravel
+- `POST /login`: Connecte un utilisateur.
+- `POST /register`: Enregistre un nouvel utilisateur.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Routes Utilisateur
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- `GET /user`: Récupère les détails de l'utilisateur authentifié.
+- `PATCH /user`: Met à jour les détails de l'utilisateur authentifié.
+- `DELETE /users/{user}`: Supprime un utilisateur spécifique.
+- `GET /user/groups`: Récupère tous les groupes d'un utilisateur spécifique.
+- `POST /user/groups`: Crée un nouveau groupe pour l'utilisateur authentifié.
+- `PATCH /user/groups/{groupe}/leave`: L'utilisateur authentifié quitte un groupe spécifique.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Routes Stock
 
-## Learning Laravel
+- `GET /user/stocks`: Récupère tous les stocks d'un utilisateur spécifique.
+- `POST /user/stocks`: Crée un nouveau stock pour un utilisateur spécifique.
+- `GET /user/stocks/{stock}`: Récupère un stock spécifique d'un utilisateur spécifique.
+- `PUT /users/stocks/{stock}`: Met à jour un stock spécifique d'un utilisateur spécifique.
+- `DELETE /user/stocks/{stock}`: Supprime un stock spécifique d'un utilisateur spécifique.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Routes Produit
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- `POST /user/stocks/{stock}/produits`: Ajoute un produit à un stock spécifique d'un utilisateur spécifique.
+- `GET /user/stocks/{stock}/produits`: Récupère tous les produits d'un stock spécifique d'un utilisateur spécifique.
+- `DELETE /user/stocks/{stock}/produits/{product}`: Supprime un produit d'un stock spécifique d'un utilisateur spécifique.
+- `PATCH /user/stocks/{stock}/produits/{product}/quantite`: Met à jour la quantité d'un produit spécifique dans un stock spécifique d'un utilisateur spécifique.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Routes Groupe
 
-## Laravel Sponsors
+- `GET /groups/{groupe}`: Récupère un groupe spécifique.
+- `PATCH /groups/{groupe}`: Met à jour un groupe spécifique.
+- `DELETE /groups/{groupe}`: Supprime un groupe spécifique.
+- `POST /groups/{groupe}/add`: Associe un utilisateur à un groupe spécifique.
+- `PATCH /groups/{groupe}/users/{user}`: Dissocie un utilisateur d'un groupe spécifique.
+- `DELETE /groups/{groupe}/stocks/{stock}`: Supprime un stock d'un groupe spécifique.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Routes Stock de Groupe
 
-### Premium Partners
+- `GET /groups/{groupe}/stocks`: Récupère tous les stocks d'un groupe spécifique.
+- `POST /groups/{groupe}/stocks`: Ajoute un stock à un groupe spécifique.
+- `GET /groups/{groupe}/stocks/{stock}`: Récupère un stock spécifique d'un groupe spécifique.
+- `GET /groups/{groupe}/stocks/{stock}/produits`: Récupère tous les produits d'un stock spécifique d'un groupe spécifique.
+- `DELETE /groups/{groupe}/stocks/{stock}/produits/{product}`: Supprime un produit d'un stock spécifique d'un groupe spécifique.
+- `PATCH /groups/{groupe}/stocks/{stock}/produits/{product}`: Met à jour un produit spécifique dans un stock spécifique d'un groupe spécifique.
+- `PATCH /groups/{groupe}/stocks/{stock}/produits/{product}/quantite`: Met à jour la quantité d'un produit spécifique dans un stock spécifique d'un groupe spécifique.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Veuillez noter que toutes les routes à l'intérieur du groupe de middleware `auth:sanctum` nécessitent que l'utilisateur soit authentifié.
 
-## Contributing
+## Installation
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. Clonez le dépôt : `git clone https://github.com/LZonca/stocker-api.git`
+2. Accédez au répertoire du projet : `cd repertoire-du-projet`
+3. Installez les dépendances : `composer install`
+4. Copiez le fichier `.env.example` en `.env` et configurez les paramètres de la base de données.
 
-## Code of Conduct
+## Configuration
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. Configurez les paramètres de la base de données dans le fichier `.env`.
+2. Assurez-vous que la base de données est correctement configurée.
+3. Configurer un serveur SMTP pour les emails de confirmation.
 
-## Security Vulnerabilities
+## Utilisation
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. Lancez l'application : `php artisan serve`
 
-## License
+## Tests
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Pour tester l'api:
+    - Utilisez /login pour obtenir un token
+    - Utilisez le token dans le header bearer token
+    - Utilisez les routes de l'api
+
+Les tests d'intégration ne fonctionnent plus à cause d'une contrainte MySQL incompatible avec sqlite.
