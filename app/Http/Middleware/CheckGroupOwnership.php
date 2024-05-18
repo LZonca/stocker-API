@@ -19,7 +19,10 @@ class CheckGroupOwnership
     {
         $groupe=$request->route('groupe');
 
-
+        if (is_numeric($groupe)) {
+            // If it's an ID, retrieve the Groupe model instance from the database
+            $groupe = Groupe::find($groupe);
+        }
         if ($groupe->proprietaire_id == $request->user()->id) {
             return $next($request);
         }
