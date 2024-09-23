@@ -190,17 +190,17 @@ class UserController extends Controller
 
         if (!$user) {
             return response([
-                'message' => [__('No user found with email: :email', ['email' => $request->email])]
+                'message' => __('No user found with email: :email', ['email' => $request->email])
             ], 404);
         } else if (!Hash::check($request->password, $user->password)) {
             return response([
-                'message' => [__('Password does not match for user: :email', ['email' => $request->email])]
+                'message' => __('Password does not match for user: :email', ['email' => $request->email])
             ], 404);
         }
 
         if (!Hash::check($request->password, $user->password)) {
             return response([
-                'message' => [__('These credentials do not match our records.')]
+                'message' => __('These credentials do not match our records.')
             ], 404);
         }
 
