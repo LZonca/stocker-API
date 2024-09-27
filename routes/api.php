@@ -58,7 +58,7 @@ Route::middleware(['set-locale'])->group(function () {
             /*Route::get('/users/{user}/stocks/all', [StockController::class, 'userStocks'])->name('api.stock.userStocks'); // Obtenir tous les stocks d'un utilisateur spécifique*/
             Route::post('/user/stocks', [StockController::class, 'store'])->name('api.stock.store'); // Créer un nouveau stock pour un utilisateur spécifique
             Route::get('/user/stocks/{stock}', [StockController::class, 'show'])->name('api.stock.show'); // Obtenir un stock spécifique d'un utilisateur spécifique
-            Route::put('/users/stocks/{stock}', [StockController::class, 'update'])->name('api.stock.update'); // Mettre à jour un stock spécifique d'un utilisateur spécifique
+            Route::put('/user/stocks/{stock}', [StockController::class, 'update'])->name('api.stock.update'); // Mettre à jour un stock spécifique d'un utilisateur spécifique
             Route::delete('/user/stocks/{stock}', [StockController::class, 'destroy'])->name('api.stock.destroy'); // Supprimer un stock spécifique d'un utilisateur spécifique
 
             // Routes produits
