@@ -238,7 +238,6 @@ class GroupeController extends Controller
             'nom' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
             'image' => 'sometimes|required|string',
-            // Add other validation rules as needed
         ]);
 
         if ($validator->fails()) {
@@ -253,6 +252,12 @@ class GroupeController extends Controller
             return response()->json(['message' => __('Stock not found or does not belong to the group.')], 404);
         }
 
+        // Check if a product with the same name already exists in the stock
+        $existingProduct = $stock->produits()->where('nom', $request->nom)->first();
+        if ($existingProduct && $existingProduct->id != $product->id) {
+            return response()->json(['message' => __('A product with the same name already exists in this stock.')], 422);
+        }
+
         // Check if the product is in the stock
         $productInStock = $stock->produits->contains($product->id);
         if (!$productInStock) {
@@ -263,11 +268,6 @@ class GroupeController extends Controller
         $userProduit = UserProduit::where('user_id', $request->user()->id)
             ->where('produit_id', $product->id)
             ->first();
-
-        // Check if the UserProduit entry exists
-        /*if (!$userProduit) {
-            return response()->json(['message' => __('No custom product information found.')], 404);
-        }*/
 
         // Update the UserProduit entry with the new product details
         $userProduit->custom_name = $request->nom ?? $userProduit->custom_name;
@@ -408,7 +408,7 @@ class GroupeController extends Controller
 
 
 
-    public function addProduct(Groupe $groupe, Stock $stock, Request $request)
+    public function addProduct(Stock $stock, Request $request)
     {
         $validator = Validator::make($request->all(), [
             'nom' => 'required|string|max:255',
@@ -421,49 +421,40 @@ class GroupeController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $stock = $groupe->stocks->find($stock->id);
+        $stock = $request->user()->stocks->find($stock->id);
 
         // Check if the stock exists
         if (!$stock) {
             return response()->json(['message' => __('Stock not found.')], 404);
         }
 
-        // Find the product by code, id or name
-        $product = null;
-        if ($request->has('code')) {
-            $product = Produit::where('code', $request->code)->first();
-        } elseif ($request->has('nom')) {
-            $product = Produit::where('nom', $request->nom)->first();
+        // Check if a product with the same name already exists in the stock
+        $existingProduct = $stock->produits()->where('nom', $request->nom)->first();
+        if ($existingProduct) {
+            return response()->json(['message' => __('A product with the same name already exists in this stock.')], 422);
         }
+
+        $product = Produit::where('nom', $request->nom)->first();
 
         if (!$product) {
             // The product is not found, create it
             $product = Produit::create($request->all());
         }
 
-        // Check if the product's code is already in the stock
-        $pivot = $stock->produits()->where('nom', $product->nom)->first();
+        // Add the product to the stock
+        $stock->produits()->attach($product->id, ['quantite' => 1]);
 
-        if ($pivot) {
-            // The product is already in the stock, increment the quantity
-            $stock->produits()->updateExistingPivot($product->id, ['quantite' => DB::raw('quantite + 1')]);
-            return response()->json(['message' => __('Product quantity incremented.')], 202);
-        } else {
-            // The product is not in the stock, add it
-            $stock->produits()->attach($product->id, ['quantite' => 1]);
+        // Create an entry in the user_produits table
+        $userProduit = new UserProduit;
+        $userProduit->user_id = $request->user()->id;
+        $userProduit->produit_id = $product->id;
+        $userProduit->custom_name = $request->nom;
+        $userProduit->custom_code = $request->code;
+        $userProduit->custom_image = $request->image;
+        $userProduit->custom_description = $request->description;
+        $userProduit->save();
 
-            // Create an entry in the user_produits table
-            $userProduit = new UserProduit;
-            $userProduit->user_id = $request->user()->id;
-            $userProduit->produit_id = $product->id;
-            $userProduit->custom_name = $request->nom;
-            $userProduit->custom_code = $request->code;
-            $userProduit->custom_image = $request->image;
-            $userProduit->custom_description = $request->description;
-            $userProduit->save();
-
-            return response()->json(['message' => __('Product added to the stock successfully.')], 200);
-        }
+        return response()->json(['message' => __('Product added to the stock successfully.')], 200);
     }
 
     public function removeProductFromGroupStock(Groupe $groupe, Stock $stock, Produit $product)
