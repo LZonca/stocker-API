@@ -55,6 +55,7 @@ Route::middleware(['set-locale'])->group(function () {
 
             // Routes de stock
             Route::get('/user/stocks', [StockController::class, 'userStocks'])->name('api.stock.userStocks  '); // Obtenir tous les stocks d'un utilisateur spécifique
+            Route::get('/user/stocks/{stock}/produits/{product}', [StockController::class, 'showProductInUserStock'])->name('api.user.stock.showProduct');
             /*Route::get('/users/{user}/stocks/all', [StockController::class, 'userStocks'])->name('api.stock.userStocks'); // Obtenir tous les stocks d'un utilisateur spécifique*/
             Route::post('/user/stocks', [StockController::class, 'store'])->name('api.stock.store'); // Créer un nouveau stock pour un utilisateur spécifique
             Route::get('/user/stocks/{stock}', [StockController::class, 'show'])->name('api.stock.show'); // Obtenir un stock spécifique d'un utilisateur spécifique
@@ -62,6 +63,7 @@ Route::middleware(['set-locale'])->group(function () {
             Route::delete('/user/stocks/{stock}', [StockController::class, 'destroy'])->name('api.stock.destroy'); // Supprimer un stock spécifique d'un utilisateur spécifique
 
             // Routes produits
+            Route::get('/groups/{groupe}/stocks/{stock}/produits/{product}', [GroupeController::class, 'showProductInGroupStock'])->name('api.group.stock.showProduct');
             Route::post('/user/stocks/{stock}/produits', [StockController::class, 'addProduct'])->name('api.stock.addProduct'); // Ajouter un produit à un stock spécifique d'un utilisateur spécifique
             Route::patch('/user/stocks/{stock}/produits/{product}', [StockController::class, 'editProductInUserStock'])->name('api.user.stock.editProduct');
             Route::get('/user/stocks/{stock}/produits', [StockController::class, 'content'])->name('api.stock.content'); // Obtenir tous les produits d'un stock spécifique d'un utilisateur spécifique

@@ -279,6 +279,25 @@ class GroupeController extends Controller
         return response()->json(['message' => __('Product updated successfully.')], 200);
     }
 
+    // GroupeController.php
+
+    public function showProductInGroupStock(Request $request, Groupe $groupe, Stock $stock, Produit $product)
+    {
+        $stock = $groupe->stocks->find($stock->id);
+
+        if (!$stock) {
+            return response()->json(['message' => __('Stock not found in this group.')], 404);
+        }
+
+        $produit = $stock->produits()->where('produit_id', $product->id)->first();
+
+        if (!$produit) {
+            return response()->json(['message' => __('Product not found in this stock.')], 404);
+        }
+
+        return response()->json($produit);
+    }
+
     public function groupStocks(Groupe $groupe)
     {
         return response()->json($groupe->stocks);

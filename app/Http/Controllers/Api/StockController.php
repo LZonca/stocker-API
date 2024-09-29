@@ -271,6 +271,25 @@ class StockController extends Controller
         }
     }
 
+    // StockController.php
+
+    public function showProductInUserStock(Request $request, Stock $stock, Produit $product)
+    {
+        $stock = $request->user()->stocks->find($stock->id);
+
+        if (!$stock) {
+            return response()->json(['message' => __('Stock not found.')], 404);
+        }
+
+        $produit = $stock->produits()->where('produit_id', $product->id)->first();
+
+        if (!$produit) {
+            return response()->json(['message' => __('Product not found in this stock.')], 404);
+        }
+
+        return response()->json($produit);
+    }
+
     public function decreaseProductQuantityInUserStock(Request $request, Stock $stock, Produit $product)
     {
         $stock = $request->user()->stocks->find($stock->id);
