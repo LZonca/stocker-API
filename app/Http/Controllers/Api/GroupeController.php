@@ -408,8 +408,9 @@ class GroupeController extends Controller
 
 
 
-    public function addProduct(Stock $stock, Request $request)
+    public function addProduct(Request $request, Groupe $groupe, Stock $stock)
     {
+        // Validate the request data
         $validator = Validator::make($request->all(), [
             'nom' => 'required|string|max:255',
             'code' => 'nullable|string|max:255',
@@ -421,11 +422,9 @@ class GroupeController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $stock = $request->user()->stocks->find($stock->id);
-
-        // Check if the stock exists
-        if (!$stock) {
-            return response()->json(['message' => __('Stock not found.')], 404);
+        // Check if the stock belongs to the group
+        if ($stock->groupe_id != $groupe->id) {
+            return response()->json(['message' => __('Stock not found in this group.')], 404);
         }
 
         // Check if a product with the same name already exists in the stock
@@ -434,6 +433,7 @@ class GroupeController extends Controller
             return response()->json(['message' => __('A product with the same name already exists in this stock.')], 422);
         }
 
+        // Check if the product exists globally
         $product = Produit::where('nom', $request->nom)->first();
 
         if (!$product) {

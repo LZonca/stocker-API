@@ -110,7 +110,7 @@ Route::middleware(['set-locale'])->group(function () {
             Route::post('/groups/{groupe}/stocks/{stock}/produits', [GroupeController::class, 'addProduct'])->name('api.group.stock.addProduct'); // Ajouter un produit à un stock spécifique d'un groupe spécifique
             Route::delete('/groups/{groupe}/stocks/{stock}/produits/{product}', [GroupeController::class, 'removeProductFromGroupStock'])->name('api.group.stock.removeProduct'); // Supprimer un produit d'un stock spécifique d'un groupe spécifique
             Route::patch('/groups/{groupe}/stocks/{stock}/produits/{product}', [GroupeController::class, 'editProductInGroupeStock'])->name('api.group.stock.removeProduct'); // Supprimer un produit d'un stock spécifique d'un groupe spécifique
-            Route::patch('/groups/{groupe}/stocks/{stock}/produits/{product}/quantite', [GroupeController::class, 'updateProductQuantity'])->name('api.group.stock.decreaseProductQuantity'); // Diminuer la quantité d'un produit spécifique dans un stock spécifique d'un groupe spécifique
+            Route::patch('/groups/{groupe}/stocks/{stock}/produits/{product}/quantite', [GroupeController::class, 'updateProductQuantity'])->name('api.group.stock.updateProductQuantity'); // Diminuer la quantité d'un produit spécifique dans un stock spécifique d'un groupe spécifique
 
         });
     });
