@@ -236,8 +236,8 @@ class GroupeController extends Controller
         $validator = Validator::make($request->all(), [
             'code' => 'sometimes|required|string|max:255',
             'nom' => 'sometimes|required|string|max:255',
-            'description' => 'sometimes|required|string',
-            'image' => 'sometimes|required|string',
+            'description' => 'sometimes|nullable|string',
+            'image' => 'sometimes|nullable|string',
         ]);
 
         if ($validator->fails()) {
