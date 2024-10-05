@@ -94,6 +94,7 @@ Route::middleware(['set-locale'])->group(function () {
                 Route::delete('/groups/{groupe}', [GroupeController::class, 'destroy']); // Supprimer un groupe spécifique
                 Route::post('/groups/{groupe}/add', [GroupeController::class, 'associateUser'])->name('api.user.associateUser'); // Associer un utilisateur à un groupe
                 Route::patch('/groups/{groupe}/users/{user}', [GroupeController::class, 'dissociateUser'])->name('api.user.dissociateUser'); // Dissocier un utilisateur d'un groupe
+                Route::patch('/groups/{groupe}/stocks/{stock}', [GroupeController::class, 'updateGroupStock'])->name('api.group.updateStock');
                 Route::delete('/groups/{groupe}/stocks/{stock}', [GroupeController::class, 'removeStockFromGroup'])->name('api.group.removeStock'); // Supprimer un stock d'un groupe
             });
 
@@ -106,7 +107,7 @@ Route::middleware(['set-locale'])->group(function () {
             Route::get('/groups/{groupe}/stocks/{stock}', [GroupeController::class, 'groupStock'])->name('api.group.stock'); // Obtenir un stock spécifique d'un groupe spécifique
             Route::get('/groups/{groupe}/stocks/{stock}/produits', [GroupeController::class, 'groupStockProducts'])->name('api.group.stock.products'); // Obtenir tous les produits d'un stock spécifique d'un groupe spécifique
 /*            Route::get('/groups/{groupe}/stocks/{stock}/produits/{product}', [GroupeController::class, 'groupStockProduct'])->name('api.group.stock.product'); // Obtenir un produit spécifique d'un stock spécifique d'un groupe spécifique*/
-            Route::patch('/groups/{groupe}/stocks/{stock}', [GroupeController::class, 'editProductInGroupeStock'])->name('api.group.stock.update'); // Mettre à jour un stock spécifique d'un groupe spécifique
+            Route::patch('/groups/{groupe}/stocks/{stock}/produits/{product}', [GroupeController::class, 'editProductInGroupeStock'])->name('api.group.stock.update'); // Mettre à jour un stock spécifique d'un groupe spécifique
             Route::post('/groups/{groupe}/stocks/{stock}/produits', [GroupeController::class, 'addProduct'])->name('api.group.stock.addProduct'); // Ajouter un produit à un stock spécifique d'un groupe spécifique
             Route::delete('/groups/{groupe}/stocks/{stock}/produits/{product}', [GroupeController::class, 'removeProductFromGroupStock'])->name('api.group.stock.removeProduct'); // Supprimer un produit d'un stock spécifique d'un groupe spécifique
             Route::patch('/groups/{groupe}/stocks/{stock}/produits/{product}', [GroupeController::class, 'editProductInGroupeStock'])->name('api.group.stock.removeProduct'); // Supprimer un produit d'un stock spécifique d'un groupe spécifique

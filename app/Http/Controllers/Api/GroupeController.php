@@ -507,6 +507,29 @@ class GroupeController extends Controller
         return response()->json(['message' => __('Product quantity updated successfully.')], 200);
     }
 
+    public function updateGroupStock(Request $request, Groupe $groupe, Stock $stock)
+    {
+        // Validate the request data
+        $validator = Validator::make($request->all(), [
+            'nom' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        // Check if the stock belongs to the group
+        if ($stock->groupe_id != $groupe->id) {
+            return response()->json(['message' => __('Stock not found in this group.')], 404);
+        }
+
+        // Update the stock details
+        $stock->update($request->only(['nom', 'description']));
+
+        return response()->json(['message' => __('Stock updated successfully.')], 200);
+    }
+
     /*public function decreaseProductQuantityInGroupStock(Groupe $groupe, Stock $stock, Produit $product)
     {
         // Check if the stock is associated with the group

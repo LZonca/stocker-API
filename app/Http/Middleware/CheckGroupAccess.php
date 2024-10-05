@@ -35,9 +35,9 @@ class CheckGroupAccess
         if (!$groupe->members->contains($request->user())){
             return response()->json(['message' => __('You are not a member of this group.')], 403);
         }
-        if($groupe->proprietaire_id != $request->user()->id) {
+        /*if($groupe->proprietaire_id != $request->user()->id) {
             return response()->json(['message' => __('You are not the owner of this group.')], 403);
-        }
+        }*/
         return $next($request);
     }
 }
