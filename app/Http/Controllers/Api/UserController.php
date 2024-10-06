@@ -103,7 +103,7 @@ class UserController extends Controller
                 'regex:/[@$!%*#?&]/', // must contain a special character
                 function ($attribute, $value, $fail) use ($request) {
                     if (Hash::check($value, $request->user()->password)) {
-                        $fail(__('The new password cannot be the same as the old password.'));
+                        $fail(__('The new password cannot be the same as the old password.'))->errorCode(422);
                     }
                 },
             ],
