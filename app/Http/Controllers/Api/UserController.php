@@ -93,6 +93,14 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|required|max:255',
             'email' => 'sometimes|required|email',
+            'old_password' => [
+                'required_with:password',
+                function ($attribute, $value, $fail) use ($request) {
+                    if (!Hash::check($value, $request->user()->password)) {
+                        $fail(__('The old password is incorrect.'));
+                    }
+                },
+            ],
             'password' => [
                 'sometimes',
                 'required',
