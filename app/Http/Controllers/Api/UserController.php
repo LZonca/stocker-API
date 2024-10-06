@@ -111,7 +111,7 @@ class UserController extends Controller
                 'regex:/[@$!%*#?&]/', // must contain a special character
                 function ($attribute, $value, $fail) use ($request) {
                     if (Hash::check($value, $request->user()->password)) {
-                        $fail(__('The new password cannot be the same as the old password.'))->errorCode(422);
+                        $fail(__('The new password cannot be the same as the old password.'));
                     }
                 },
             ],
@@ -137,7 +137,7 @@ class UserController extends Controller
 
         try {
             $request->user()->update($updateData);
-            return response()->json($request->user());
+            return response()->json($request->user(), 204);
         } catch (\Illuminate\Database\QueryException $e) {
             // Catch the error if the email is a duplicate
             if ($e->getCode() == 23000) { // 23000 is the SQLSTATE code for a unique constraint violation
