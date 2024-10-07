@@ -3,12 +3,13 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable  implements MustVerifyEmail
 {
     use HasFactory, Notifiable, HasApiTokens;
 
@@ -54,5 +55,10 @@ class User extends Authenticatable
     public function groupes()
     {
         return $this->belongsToMany(Groupe::class, 'user_belongs_to_groupe');
+    }
+
+    public function shoppingLists()
+    {
+        return $this->hasMany(ShoppingList::class);
     }
 }

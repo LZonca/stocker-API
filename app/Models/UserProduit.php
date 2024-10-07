@@ -20,4 +20,11 @@ class UserProduit extends Model
     {
         return $this->belongsTo(Produit::class);
     }
+
+    public function shoppingLists()
+    {
+        return $this->belongsToMany(ShoppingList::class, 'shopping_list_user_produit')
+            ->withPivot('quantity')
+            ->withTimestamps();
+    }
 }
