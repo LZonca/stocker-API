@@ -12,8 +12,8 @@ use Illuminate\Support\Facades\Route;
 });*/
 Route::middleware(['set-locale'])->group(function () {
     // Routes d'authentification
-    Route::post('/login', [UserController::class, 'login'])->name('login'); // Connexion de l'utilisateur
-    Route::post('/register', [UserController::class, 'store'])->name('register'); // Inscription de l'utilisateur
+    Route::post('/login', [UserController::class, 'login'])->name('api_login'); // Connexion de l'utilisateur
+    Route::post('/register', [UserController::class, 'store'])->name('api_login'); // Inscription de l'utilisateur
 
 // Groupe de routes nécessitant une authentification
     Route::group(['middleware' => 'auth:sanctum'], function () {
