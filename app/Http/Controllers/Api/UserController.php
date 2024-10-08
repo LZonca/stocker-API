@@ -121,16 +121,21 @@ class UserController extends Controller
         }
     }
 
+    // app/Http/Controllers/Api/UserController.php
+
     public function sendVerificationEmail(Request $request)
     {
-        $user = Auth::user();
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'User not authenticated.'], 401);
+        }
 
         if ($user->hasVerifiedEmail()) {
             return response()->json(['message' => 'Email already verified.'], 200);
         }
 
-        event(new Registered($user));
-        $user->tokens()->delete();
+        $user->sendEmailVerificationNotification();
         return response()->json(['message' => 'Verification email sent.'], 201);
     }
     /**
