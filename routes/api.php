@@ -15,6 +15,9 @@ Route::middleware(['set-locale'])->group(function () {
     Route::post('/login', [UserController::class, 'login'])->name('api_login'); // Connexion de l'utilisateur
     Route::post('/register', [UserController::class, 'store'])->name('api_login'); // Inscription de l'utilisateur
 
+    Route::post('/email/verification-notification', [UserController::class, 'sendVerificationEmail'])
+        ->name('api.email.verification-notification');
+
 // Groupe de routes nécessitant une authentification
     Route::group(['middleware' => 'auth:sanctum'], function () {
 

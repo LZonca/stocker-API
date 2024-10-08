@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Groupe;
 use App\Models\User;
 use App\Models\UserProduit;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
@@ -20,6 +23,41 @@ class UserController extends Controller
     public function index()
     {
         return response()->json(User::all());
+    }
+
+    public function login(Request $request)
+    {
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => __('No user found with email: :email', ['email' => $request->email])], 404);
+        }
+
+        if (!Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => __('Password does not match for user: :email', ['email' => $request->email])], 404);
+        }
+
+        if (!$user->hasVerifiedEmail()) {
+            return response()->json(['message' => __('Your email address is not verified.')], 403);
+        }
+
+        // Store session information with a custom id
+        DB::table('sessions')->insert([
+            'id' => hash('sha256', $user->id . time()), // Custom id value
+            'user_id' => $user->id,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->header('User-Agent'),
+            'last_activity' => time(),
+            'created_at' => now(),
+            'payload' => ''
+        ]);
+
+        $token = $user->createToken('api-token')->plainTextToken;
+
+        return response()->json([
+            'user' => $user,
+            'token' => $token
+        ], 201);
     }
 
     /**
@@ -60,7 +98,10 @@ class UserController extends Controller
 
             // Send email verification notification
             $verificationUrl = URL::temporarySignedRoute(
-                'verification.verify', now()->addMinutes(60), ['id' => $user->id]
+                'verification.verify', now()->addMinutes(60), [
+                    'id' => $user->id,
+                    'hash' => sha1($user->getEmailForVerification()),
+                ]
             );
             $user->notify(new VerifyEmail($verificationUrl));
 
@@ -80,7 +121,18 @@ class UserController extends Controller
         }
     }
 
+    public function sendVerificationEmail(Request $request)
+    {
+        $user = Auth::user();
 
+        if ($user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'Email already verified.'], 200);
+        }
+
+        event(new Registered($user));
+        $user->tokens()->delete();
+        return response()->json(['message' => 'Verification email sent.'], 201);
+    }
     /**
      * Display the specified resource.
      */
@@ -197,29 +249,6 @@ class UserController extends Controller
         return response()->json($groups);
     }
 
-    public function login(Request $request)
-    {
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            return response()->json(['message' => __('No user found with email: :email', ['email' => $request->email])], 404);
-        }
-
-        if (!Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => __('Password does not match for user: :email', ['email' => $request->email])], 404);
-        }
-
-        if (!$user->hasVerifiedEmail()) {
-            return response()->json(['message' => __('Your email address is not verified.')], 403);
-        }
-
-        $token = $user->createToken('api-token')->plainTextToken;
-
-        return response()->json([
-            'user' => $user,
-            'token' => $token
-        ], 201);
-    }
     public function leaveGroup(Request $request, $groupId)
     {
         // Retrieve the group by its ID
@@ -240,5 +269,7 @@ class UserController extends Controller
 
         return response()->json(['message' => __('Successfully left the group.')], 200);
     }
+
+
 
 }
