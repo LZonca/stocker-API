@@ -15,7 +15,6 @@
             @vite(['resources/css/app.css', 'resources/js/app.js'])
         @elseif(env('APP_ENV') === 'prod')
             <link rel='stylesheet' type='text/css' href="/build/assets/app.css">
-            <link rel='stylesheet' type='text/css' href="/build/assets/app2.css">
             <script src="/build/assets/app.js"></script>
         @endif
         <!-- Styles -->

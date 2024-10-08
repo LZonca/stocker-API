@@ -63,4 +63,19 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
+    public function stocks()
+    {
+        return $this->hasMany(Stock::class, 'proprietaire_id');
+    }
+
+    public function groupes()
+    {
+        return $this->belongsToMany(Groupe::class, 'user_belongs_to_groupe');
+    }
+
+    public function shoppingLists()
+    {
+        return $this->hasMany(ShoppingList::class);
+    }
 }
