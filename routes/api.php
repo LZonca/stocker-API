@@ -7,9 +7,9 @@ use App\Models\UserProduit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*Route::get('/', function () {
-    return response()->json(['message' => 'Hello World!']);
-});*/
+Route::get('/version', [UserController::class, 'getVersion'])->name('api.version');
+
+
 Route::middleware(['set-locale'])->group(function () {
     // Routes d'authentification
     Route::post('/login', [UserController::class, 'login'])->name('api_login'); // Connexion de l'utilisateur

@@ -277,6 +277,15 @@ class UserController extends Controller
         return response()->json(['message' => __('Successfully left the group.')], 200);
     }
 
+    public function getVersion()
+    {
+        $appVersion = config('app.version'); // Assuming you have the app version in the config
+        $apiVersion =  config('app.api_version');; // Define your API version here
 
+        return response()->json([
+            'app_version' => $appVersion,
+            'api_version' => $apiVersion,
+        ]);
+    }
 
 }
