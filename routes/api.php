@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['set-locale'])->group(function () {
     // Routes d'authentification
     Route::post('/login', [UserController::class, 'login'])->name('api_login'); // Connexion de l'utilisateur
-    Route::post('/register', [UserController::class, 'store'])->name('api_login'); // Inscription de l'utilisateur
+    Route::post('/register', [UserController::class, 'register'])->name('api_login'); // Inscription de l'utilisateur
 
 
 

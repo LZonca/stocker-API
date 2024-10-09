@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 
@@ -63,7 +64,7 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function register(Request $request)
     {
         $messages = [
             'password.min' => __('The password must be at least 12 characters.'),
@@ -95,8 +96,8 @@ class UserController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
             ]);
-
             // Send email verification notification
+
             $verificationUrl = URL::temporarySignedRoute(
                 'verification.verify', now()->addMinutes(60), [
                     'id' => $user->id,
@@ -125,6 +126,7 @@ class UserController extends Controller
 
     public function sendVerificationEmail(Request $request)
     {
+
         $user = $request->user();
 
         if (!$user) {
