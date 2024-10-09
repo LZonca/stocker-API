@@ -280,7 +280,7 @@ class UserController extends Controller
     public function getVersion()
     {
         $appVersion = config('app.version'); // Assuming you have the app version in the config
-        $apiVersion =  config('app.api_version');; // Define your API version here
+        $apiVersion =  config('app.api-version');; // Define your API version here
 
         return response()->json([
             'app_version' => $appVersion,
