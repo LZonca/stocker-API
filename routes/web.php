@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Groups;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -32,4 +33,7 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    Route::get('/groups', Groups::class)->name('groups');
+
 });

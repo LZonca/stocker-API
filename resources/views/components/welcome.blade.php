@@ -2,11 +2,11 @@
     <x-application-logo class="block h-12 w-auto" />
 
     <h1 class="mt-8 text-2xl font-medium text-gray-900">
-        Welcome to your stocker dashboard!
+        Welcome to stocker !
     </h1>
 
     <p class="mt-6 text-gray-500 leading-relaxed">
-        Stocker is a simple application that helps you manage your inventories, to reduce waste and save more money ! Get started by downloading Stocker on mobile.
+        Stocker is a simple application that helps you manage your inventories, to reduce waste and save money ! Get started by downloading Stocker on mobile.
     </p>
 </div>
 

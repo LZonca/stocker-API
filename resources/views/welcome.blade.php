@@ -55,7 +55,7 @@
                     </header>
 
                     <main class="mt-6">
-                        <div class="grid gap-6 lg:grid-cols-2 lg:gap-8">
+                        {{--<div class="grid gap-6 lg:grid-cols-2 lg:gap-8">
                             <a
                                 href="https://laravel.com/docs"
                                 id="docs-card"
@@ -159,7 +159,11 @@
                                     </p>
                                 </div>
                             </div>
-                        </div>
+                        </div>--}}
+                        <x-guest-layout>
+                            <x-welcome/>
+                        </x-guest-layout>
+
                     </main>
 
                     <footer class="py-16 text-center text-sm text-black">
