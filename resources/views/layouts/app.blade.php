@@ -10,6 +10,7 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
         @if (env('APP_ENV') == 'local')
             @vite(['resources/css/app.css', 'resources/js/app.js'])
         @elseif(env('APP_ENV') === 'prod')
@@ -17,10 +18,8 @@
             <script src="/build/assets/app.js"></script>
         @endif
         <!-- Scripts -->
-
         <!-- Styles -->
         @livewireStyles
-        @livewireScripts
     </head>
     <body class="font-sans antialiased">
         <x-banner />
@@ -40,6 +39,7 @@
             <!-- Page Content -->
             <main>
                 {{ $slot }}
+                <x-mary-toast />
             </main>
         </div>
 

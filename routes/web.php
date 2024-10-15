@@ -4,12 +4,18 @@ use App\Livewire\Groups;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-
+Route::get('/download-mobile', function () {
+    $version = config('app.version');
+    $apkFile = "public/apps/mobile/stocker-release-{$version}.apk";
+    $apkUrl = Storage::url($apkFile);
+    return redirect($apkUrl);
+})->name('download-mobile');
 
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
