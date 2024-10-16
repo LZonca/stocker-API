@@ -24,4 +24,13 @@ class Groupe extends Model
     {
         return $this->belongsTo(User::class, 'proprietaire_id');
     }
+
+    public function getImageAttribute($value): string
+    {
+        if ($value) {
+            return $value;
+        }
+
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->nom) . '&color=7F9CF5&background=EBF4FF';
+    }
 }

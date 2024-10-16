@@ -11,25 +11,21 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        @if (env('APP_ENV') == 'local')
-            @vite(['resources/css/app.css', 'resources/js/app.js'])
-        @elseif(env('APP_ENV') === 'prod')
-            <link rel='stylesheet' type='text/css' href="/build/assets/app.css">
-            <script src="/build/assets/app.js"></script>
-        @endif
         <!-- Scripts -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+
         <!-- Styles -->
         @livewireStyles
     </head>
     <body class="font-sans antialiased">
         <x-banner />
 
-        <div class="min-h-screen bg-gray-100">
+        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
             @livewire('navigation-menu')
 
             <!-- Page Heading -->
             @if (isset($header))
-                <header class="bg-white shadow">
+                <header class="bg-white dark:bg-gray-800 shadow">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
@@ -39,7 +35,6 @@
             <!-- Page Content -->
             <main>
                 {{ $slot }}
-                <x-mary-toast />
             </main>
         </div>
 

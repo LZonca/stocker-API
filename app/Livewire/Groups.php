@@ -20,7 +20,7 @@ class Groups extends Component
         $this->refreshGroups();
     }
 
-    public function refreshGroups()
+    public function refreshGroups(): void
     {
         $this->groups = Auth::user()->groupes()->with([
             'proprietaire',
@@ -45,7 +45,7 @@ class Groups extends Component
         }
     }
 
-    public function createGroup()
+    public function createGroup(): void
     {
         $newGroup = new Groupe();
         $newGroup->nom = $this->newGroupName;
@@ -53,6 +53,7 @@ class Groups extends Component
         $newGroup->save();
 
         // Attach the group to the user
+
         Auth::user()->groupes()->attach($newGroup->id);
 
         $this->refreshGroups();

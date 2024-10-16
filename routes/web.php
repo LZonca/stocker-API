@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Groups;
+use App\Livewire\Stocks;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -41,5 +42,5 @@ Route::middleware([
     })->name('dashboard');
 
     Route::get('/groups', Groups::class)->name('groups');
-
+    Route::get('/stocks', Stocks::class)->name('stocks');
 });

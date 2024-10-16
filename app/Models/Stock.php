@@ -33,4 +33,12 @@ class Stock extends Model
     {
         return $this->belongsToMany(Stock::class);
     }
+    public function getImageAttribute($value): string
+    {
+        if ($value) {
+            return $value;
+        }
+
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->nom) . '&color=7F9CF5&background=EBF4FF';
+    }
 }
