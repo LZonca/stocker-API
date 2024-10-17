@@ -1,7 +1,7 @@
 <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-            <div class="p-6 sm:px-20 bg-white border-b border-gray-200">
+        <div class="bg-white dark:bg-gray-900 overflow-hidden shadow-xl sm:rounded-lg">
+            <div class="p-6 sm:px-20 bg-white dark:bg-gray-900 border-b border-gray-200">
                 <div class="flex justify-center text-center">
                     <x-application-logo class="block h-12 w-auto" />
                 </div>
@@ -11,7 +11,7 @@
                 <div class="mt-6 text-gray-500">
                     <ul>
                         @forelse ($stocks as $stock)
-                            <x-mary-list-item :item="$stock" link='' no-separator class="hover: accent-gray-700 hover:text-blue-50">
+                            <x-mary-list-item :item="$stock" link='' no-separator class="hover:accent-gray-700 hover:text-blue-50">
                                 <x-slot:avatar>
                                     <img src="{{$stock->image != null ? $stock->image : asset('stocker.png')  }}" alt="" class="btn-circle" />
                                 </x-slot:avatar>
