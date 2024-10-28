@@ -80,6 +80,7 @@
                 <!-- Settings Dropdown -->
                 <div class="ms-3 relative">
                     <x-dropdown align="right" width="48">
+
                         <x-slot name="trigger">
                             @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
                                 <button class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
@@ -114,7 +115,11 @@
                                 </x-dropdown-link>
                             @endif
 
-                            <div class="border-t border-gray-200 dark:border-gray-600"></div>
+                            {{--<div class="border-t border-gray-200 dark:border-gray-600 flex justify-center items-center p-2">
+                                <button class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
+                                    <x-mary-theme-toggle />
+                                </button>
+                            </div>--}}
 
                             <!-- Authentication -->
                             <form method="POST" action="{{ route('logout') }}" x-data>

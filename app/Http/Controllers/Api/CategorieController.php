@@ -88,7 +88,7 @@ class CategorieController extends Controller
         $categorie = Categorie::find($categorieId);
 
         if (!$produit || !$categorie) {
-            return response()->json(['message' => 'Produit or Categorie not found'], 404);
+            return response()->json(['message' => 'ProductView or Categorie not found'], 404);
         }
 
         $produit->categorie()->associate($categorie);
@@ -106,11 +106,11 @@ class CategorieController extends Controller
         $categorie = Categorie::find($categorieId);
 
         if (!$produit || !$categorie) {
-            return response()->json(['message' => 'Produit or Categorie not found'], 404);
+            return response()->json(['message' => 'ProductView or Categorie not found'], 404);
         }
 
         if ($produit->categorie->id != $categorie->id) {
-            return response()->json(['message' => 'Produit is not linked to the specified Categorie'], 400);
+            return response()->json(['message' => 'ProductView is not linked to the specified Categorie'], 400);
         }
 
         $produit->categorie()->dissociate();

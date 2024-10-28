@@ -1,7 +1,10 @@
 <?php
 
+use App\Livewire\GroupView;
 use App\Livewire\Groups;
+use App\Livewire\ProductView;
 use App\Livewire\Stocks;
+use App\Livewire\StockView;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -43,4 +46,7 @@ Route::middleware([
 
     Route::get('/groups', Groups::class)->name('groups');
     Route::get('/stocks', Stocks::class)->name('stocks');
+    Route::get('/stocks/{stock}', StockView::class)->name('stock.view');
+    Route::get('/groups/{group}', GroupView::class)->name('group.view');
+    Route::get('/stocks/{stock}/products/{product}', ProductView::class)->name('product.view');
 });

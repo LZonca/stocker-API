@@ -78,6 +78,8 @@ class GroupeController extends Controller
                     $produit->nom = $userProduit->custom_name ?? $produit->nom;
                     $produit->code = $userProduit->custom_code ?? $produit->code;
                     $produit->description = $userProduit->custom_description ?? $produit->description;
+                    $produit->expiry_date = $userProduit->custom_expiry_date ?? $produit->expiry_date;
+                    $produit->prix = $userProduit->custom_price ?? $produit->prix;
                     $produit->image = $userProduit->custom_image ?? $produit->image;
                 }
             }
@@ -116,6 +118,7 @@ class GroupeController extends Controller
                 $userProduit->custom_code = $request->code ?? $userProduit->custom_code;
                 $userProduit->custom_description = $request->description ?? $userProduit->custom_description;
                 $userProduit->custom_image = $request->image ?? $userProduit->custom_image;
+                $userProduit->custom_expiry_date = $request->expiry_date ?? $userProduit->custom_expiry_date;
                 $userProduit->save();
             }
         }
@@ -123,7 +126,7 @@ class GroupeController extends Controller
         return response()->json($stock);
     }
 
-    /*public function groupStockProduct($groupeId, Stock $stock, Produit $produit)
+    /*public function groupStockProduct($groupeId, Stock $stock, ProductView $produit)
     {
         $groupe = Groupe::find($groupeId);
 
@@ -238,6 +241,8 @@ class GroupeController extends Controller
             'nom' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|nullable|string',
             'image' => 'sometimes|nullable|string',
+            'prix' => 'sometimes|nullable|numeric|min:0',
+            'expiry_date' => 'sometimes|nullable|date',
         ]);
 
         if ($validator->fails()) {
@@ -274,6 +279,8 @@ class GroupeController extends Controller
         $userProduit->custom_description = $request->description ?? $userProduit->custom_description;
         $userProduit->custom_code = $request->code ?? $userProduit->custom_code;
         $userProduit->custom_image = $request->image ?? $userProduit->custom_image;
+        $userProduit->custom_price = $request->prix ?? $userProduit->custom_price;
+        $userProduit->custom_expiry_date = $request->expiry_date ?? $userProduit->custom_expiry_date;
         $userProduit->save();
 
         return response()->json(['message' => __('Product updated successfully.')], 200);
@@ -394,9 +401,12 @@ class GroupeController extends Controller
 
             // If user-specific information exists, use it to override the product details
             if ($userProduit) {
+                $product->code = $userProduit->custom_code ?? $product->code;
                 $product->nom = $userProduit->custom_name ?? $product->nom;
                 $product->description = $userProduit->custom_description ?? $product->description;
                 $product->image = $userProduit->custom_image ?? $product->image;
+                $product->expiry_date = $userProduit->custom_expiry_date ?? $product->expiry_date;
+                $product->prix = $userProduit->custom_price ?? $product->prix;
             }
 
             // Add the product with user-specific information to the array
@@ -416,6 +426,8 @@ class GroupeController extends Controller
             'code' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|image',
+            'prix' => 'nullable|numeric|min:0',
+            'expiry_date' => 'nullable|date',
         ]);
 
         if ($validator->fails()) {
@@ -452,6 +464,8 @@ class GroupeController extends Controller
         $userProduit->custom_code = $request->code;
         $userProduit->custom_image = $request->image;
         $userProduit->custom_description = $request->description;
+        $userProduit->custom_price = $request->prix;
+        $userProduit->custom_expiry_date = $request->expiry_date;
         $userProduit->save();
 
         return response()->json(['message' => __('Product added to the stock successfully.')], 200);
@@ -530,7 +544,7 @@ class GroupeController extends Controller
         return response()->json(['message' => __('Stock updated successfully.')], 200);
     }
 
-    /*public function decreaseProductQuantityInGroupStock(Groupe $groupe, Stock $stock, Produit $product)
+    /*public function decreaseProductQuantityInGroupStock(Groupe $groupe, Stock $stock, ProductView $product)
     {
         // Check if the stock is associated with the group
         if ($stock->groupe_id != $groupe->id) {

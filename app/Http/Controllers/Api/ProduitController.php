@@ -28,7 +28,8 @@ class ProduitController extends Controller
             'code' => 'nullable|unique:produits|max:255',
             'nom' => 'required|max:255',
             'description' => 'nullable|string',
-            'prix' => 'nullable|numeric',
+            'prix' => 'nullable|numeric|min:0',
+            'expiry_date' => 'nullable|date',
             'image' => 'nullable|image',
             'categorie_id' => 'nullable|exists:categories,id',
         ]);
@@ -59,6 +60,8 @@ class ProduitController extends Controller
             $produit->nom = $userProduit->custom_name ?? $produit->nom;
             $produit->description = $userProduit->custom_description ?? $produit->description;
             $produit->image = $userProduit->custom_image ?? $produit->image;
+            $produit->prix = $userProduit->custom_price ?? $produit->prix;
+            $produit->expiry_date = $userProduit->custom_expiry_date ?? $produit->expiry_date;
         }
 
         return response()->json($produit);
@@ -73,7 +76,8 @@ class ProduitController extends Controller
             'code' => 'nullable|unique:produits|max:255',
             'nom' => 'required|max:255',
             'description' => 'nullable|string',
-            'prix' => 'nullable|numeric',
+            'prix' => 'nullable|numeric|min:0',
+            'expiry_date' => 'nullable|date',
             'image' => 'nullable|image',
             'categorie_id' => 'nullable|exists:categories,id',
         ]);

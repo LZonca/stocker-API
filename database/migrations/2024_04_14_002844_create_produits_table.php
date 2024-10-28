@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->integer('prix')->nullable();
             $table->string('image')->nullable();
+            $table->date('expiry_date')->nullable();
             $table->foreignId('categorie_id')->nullable()->constrained();
             $table->timestamps();
         });

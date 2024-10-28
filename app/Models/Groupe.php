@@ -9,7 +9,7 @@ class Groupe extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nom', 'image', 'proprietaire_id'];
+    protected $fillable = ['nom', 'image', 'proprietaire_id', 'groupe_id'];
 
     public function members()
     {
@@ -23,6 +23,11 @@ class Groupe extends Model
     public function proprietaire()
     {
         return $this->belongsTo(User::class, 'proprietaire_id');
+    }
+
+    public function group()
+    {
+        return $this->belongsTo(Groupe::class, 'groupe_id');
     }
 
     public function getImageAttribute($value): string

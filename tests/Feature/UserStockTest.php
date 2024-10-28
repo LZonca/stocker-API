@@ -71,7 +71,7 @@ class UserStockTest extends TestCase
     /*public function testAddExisingProduitToUserStockShouldIncrement()
     {
         $user = User::factory()->create();
-        $produit = Produit::factory()->create([
+        $produit = ProductView::factory()->create([
             'code' => '123456789',
             'nom' => 'test',
             'description' => 'test',
@@ -79,7 +79,7 @@ class UserStockTest extends TestCase
         ]);
 
 
-        Produit::factory()->count(3)->create();
+        ProductView::factory()->count(3)->create();
         $stock = Stock::factory()->create(['proprietaire_id' => $user->id]);
 
 

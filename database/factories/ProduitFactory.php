@@ -26,7 +26,7 @@ class ProduitFactory extends Factory
             'nom' => $this->faker->unique()->word, // Ensure 'nom' is unique
             'description' => $this->faker->sentence,
             'prix' => $this->faker->randomFloat(2, 1, 100),
-            'image' => $this->faker->imageUrl(),
+            'image' => null,
         ];
     }
 }

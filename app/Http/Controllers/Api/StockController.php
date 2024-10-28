@@ -37,6 +37,8 @@ class StockController extends Controller
                     $produit->code = $userProduit->custom_code ?? $produit->code;
                     $produit->description = $userProduit->custom_description ?? $produit->description;
                     $produit->image = $userProduit->custom_image ?? $produit->image;
+                    $produit->prix = $userProduit->custom_price ?? $produit->prix;
+                    $produit->expiry_date = $userProduit->custom_expiry_date ?? $produit->expiry_date;
                 }
             }
         }
@@ -57,6 +59,8 @@ class StockController extends Controller
             'code' => 'sometimes|nullable|string|max:255',
             'description' => 'sometimes|nullable|string',
             'image' => 'sometimes|nullable|string',
+            'expiry_date' => 'sometimes|nullable|date',
+            'prix' => 'sometimes|nullable|numeric|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -93,6 +97,8 @@ class StockController extends Controller
         $userProduit->custom_description = $request->description ?? $userProduit->custom_description;
         $userProduit->custom_code = $request->code ?? $userProduit->custom_code;
         $userProduit->custom_image = $request->image ?? $userProduit->custom_image;
+        $userProduit->custom_price = $request->prix ?? $userProduit->custom_price;
+        $userProduit->custom_expiry_date = $request->expiry_date ?? $userProduit->custom_expiry_date;
         $userProduit->save();
 
         return response()->json(['message' => __('Product updated successfully.')], 200);
@@ -133,8 +139,10 @@ class StockController extends Controller
         if ($userProduit) {
             $produit->nom = $userProduit->custom_name ?? $produit->nom;
             $produit->description = $userProduit->custom_description ?? $produit->description;
-            $userProduit->custom_code = $request->code ?? $userProduit->custom_code;
+            $produit->code = $userProduit->custom_code ?? $produit->code;
             $produit->image = $userProduit->custom_image ?? $produit->image;
+            $produit->prix = $userProduit->custom_price ?? $produit->prix;
+            $produit->expiry_date = $userProduit->custom_expiry_date ?? $produit->expiry_date;
         }
 
         return response()->json($produit);
@@ -220,6 +228,8 @@ class StockController extends Controller
             'code' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|image',
+            'expiry_date' => 'nullable|date',
+            'prix' => 'nullable|numeric|min:0',
         ]);
 
         if ($validator->fails()) {
@@ -255,6 +265,7 @@ class StockController extends Controller
         $userProduit->produit_id = $product->id;
         $userProduit->custom_name = $request->nom;
         $userProduit->custom_code = $request->code;
+        $userProduit->custom_expiry_date = $request->expiry_date;
         $userProduit->custom_image = $request->image;
         $userProduit->custom_description = $request->description;
         $userProduit->save();
@@ -361,6 +372,8 @@ class StockController extends Controller
                 $product->description = $userProduit->custom_description ?? $product->description;
                 $product->code = $userProduit->custom_code ?? $product->code;
                 $product->image = $userProduit->custom_image ?? $product->image;
+                $product->prix = $userProduit->custom_price ?? $product->prix;
+                $product->expiry_date = $userProduit->custom_expiry_date ?? $product->expiry_date;
             }
 
             return [
@@ -369,6 +382,7 @@ class StockController extends Controller
                 'nom' => $product->nom,
                 'description' => $product->description,
                 'prix' => $product->prix,
+                'expiry_date' => $product->expiry_date,
                 'image' => $product->image,
                 'categorie_id' => $product->categorie_id,
                 'pivot' => [

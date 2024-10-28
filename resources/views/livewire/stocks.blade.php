@@ -5,13 +5,15 @@
                 <div class="flex justify-center text-center">
                     <x-application-logo class="block h-12 w-auto" />
                 </div>
-                <div class="mt-8 text-2xl">
-                    Your Stocks
-                </div>
+                <x-mary-header title="{{__('Your stocks')}}" >
+                    <x-slot:actions>
+                        <x-mary-button icon="o-plus" wire:click="$toggle('seeCreateModal')" spinner class="btn-circle"/>
+                    </x-slot:actions>
+                </x-mary-header>
                 <div class="mt-6 text-gray-500">
                     <ul>
                         @forelse ($stocks as $stock)
-                            <x-mary-list-item :item="$stock" link='' no-separator class="hover:accent-gray-700 hover:text-blue-50">
+                            <x-mary-list-item :item="$stock" link='/stocks/{{$stock->id }}' no-separator class="hover:accent-gray-700 hover:text-blue-50">
                                 <x-slot:avatar>
                                     <img src="{{$stock->image != null ? $stock->image : asset('stocker.png')  }}" alt="" class="btn-circle" />
                                 </x-slot:avatar>
@@ -31,7 +33,6 @@
                     </ul>
                 </div>
             </div>
-            <x-mary-button icon="o-plus" wire:click="$toggle('seeCreateModal')" spinner class="btn-sm btn-circle fixed bottom-10 right-10 bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105"/>
             <x-mary-modal wire:model="seeCreateModal" title="{{ __('Create a new group') }}" class="text-gray-950 dark:text-gray-200" persistent>
                 <x-mary-form wire:submit="createGroup">
                     <x-mary-input wire:model="newStockName" label="Name" inline/>

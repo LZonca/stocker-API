@@ -30,20 +30,14 @@ class Stocks extends Component
                 }]);
             },
         ])->get();
-
-        foreach ($this->stocks as $stock) {
-            foreach ($stock->produits as $produit) {
-                if ($produit->userProduits) {
-                    $produit->nom = $produit->userProduits->custom_name ?? $produit->nom;
-                    $produit->description = $produit->userProduits->custom_description ?? $produit->description;
-                    $produit->image = $produit->userProduits->custom_image ?? $produit->image;
-                }
-            }
-        }
     }
 
     public function createStock(): void
     {
+        $this->validate([
+            'newStockName' => 'required|string|max:255',
+        ]);
+
         $newStock = new Stock();
         $newStock->nom = $this->newStockName;
         $newStock->proprietaire_id = Auth::user()->id;
@@ -54,6 +48,8 @@ class Stocks extends Component
         $this->refreshStocks();
         $this->seeCreateModal = false;
         $this->success('Stock créé avec succès');
+
+        $this->newStockName = '';
     }
     public function render()
     {

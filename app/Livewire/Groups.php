@@ -31,34 +31,26 @@ class Groups extends Component
                 }]);
             },
         ])->get();
-
-        foreach ($this->groups as $group) {
-            foreach ($group->stocks as $stock) {
-                foreach ($stock->produits as $produit) {
-                    if ($produit->userProduits) {
-                        $produit->nom = $produit->userProduits->custom_name ?? $produit->nom;
-                        $produit->description = $produit->userProduits->custom_description ?? $produit->description;
-                        $produit->image = $produit->userProduits->custom_image ?? $produit->image;
-                    }
-                }
-            }
-        }
     }
 
     public function createGroup(): void
     {
+        $this->validate([
+            'newGroupName' => 'required|string|max:255',
+        ]);
+
         $newGroup = new Groupe();
         $newGroup->nom = $this->newGroupName;
         $newGroup->proprietaire_id = Auth::user()->id;
         $newGroup->save();
-
-        // Attach the group to the user
 
         Auth::user()->groupes()->attach($newGroup->id);
 
         $this->refreshGroups();
         $this->seeCreateModal = false;
         $this->success('Groupe créé avec succès');
+
+        $this->newGroupName = '';
     }
 
     public function render()

@@ -18,6 +18,7 @@
             <script src="/build/assets/app.js"></script>
         @endif
         <!-- Styles -->
+
         @livewireStyles
         @livewireScripts
     </head>

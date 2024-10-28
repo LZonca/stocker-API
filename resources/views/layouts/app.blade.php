@@ -19,6 +19,7 @@
         @endif
         <!-- Scripts -->
         <!-- Styles -->
+
         @livewireStyles
     </head>
     <body class="font-sans antialiased">

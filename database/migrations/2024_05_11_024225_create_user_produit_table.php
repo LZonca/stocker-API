@@ -15,7 +15,10 @@ return new class extends Migration {
             $table->string('custom_code')->nullable();
             $table->string('custom_name')->nullable();
             $table->text('custom_description')->nullable();
-            // Add any other custom fields here
+            $table->double('custom_price')->nullable();
+            $table->date('custom_expiry_date')->nullable();
+
+
             $table->timestamps();
         });
     }
