@@ -14,14 +14,13 @@
             @csrf
 
             <div>
-                <x-label for="password" value="{{ __('Password') }}" />
-                <x-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" autofocus />
+                <x-mary-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="current-password" autofocus label="{{ __('Password') }}" icon="o-lock-closed" />
             </div>
 
             <div class="flex justify-end mt-4">
-                <x-button class="ms-4">
+                <x-mary-button class="ms-4">
                     {{ __('Confirm') }}
-                </x-button>
+                </x-mary-button>
             </div>
         </form>
     </x-authentication-card>
