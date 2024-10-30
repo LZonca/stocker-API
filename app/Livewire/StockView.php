@@ -49,7 +49,8 @@ class StockView extends Component
         $newProduit->code = $this->newProductCode;
         $newProduit->save();
 
-        $this->stock->produits()->attach($newProduit->id);
+        // Attach the new product to the stock with an initial quantite of 1
+        $this->stock->produits()->attach($newProduit->id, ['quantite' => 1]);
 
         // Create a UserProduit entry
         $userProduit = new UserProduit();

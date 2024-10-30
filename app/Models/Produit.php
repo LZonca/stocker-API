@@ -18,7 +18,7 @@ class Produit extends Model
 
     public function stocks()
     {
-        return $this->belongsToMany(Stock::class);
+        return $this->belongsToMany(Stock::class)->withPivot('quantite');
     }
 
     public function userProduits()
@@ -33,5 +33,11 @@ class Produit extends Model
         }
 
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->nom) . '&color=7F9CF5&background=EBF4FF';
+    }
+
+    public function getQuantite()
+    {
+        $stock = $this->stocks()->first();
+        return $stock ? $stock->pivot->quantite : 'N/A';
     }
 }

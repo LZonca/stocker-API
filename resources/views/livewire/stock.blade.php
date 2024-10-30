@@ -11,7 +11,7 @@
                     @forelse ($products as $product)
                         <x-mary-list-item :item="$product" link="/stocks/{{$stock->id}}/products/{{$product->id}}">
                             <x-slot:avatar>
-                                <x-mary-avatar src="{{ $userProduits[$product->id]->custom_image ?? $product->image }}" alt="Product image" />
+                                <x-mary-avatar image="{{ $userProduits[$product->id]->image }}" alt="Product image" />
                             </x-slot:avatar>
 
                             <x-slot:value>
