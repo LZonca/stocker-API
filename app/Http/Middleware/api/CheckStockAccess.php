@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace App\Http\Middleware\api;
 
 use App\Models\Stock;
 use Closure;

@@ -16,7 +16,7 @@
             @csrf
 
             <div>
-                <x-mary-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus label="{{ __('Email') }}" icon="o-envelope" autocomplete="username" />
+                <x-mary-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus label="{{ __('Email') }}" icon-right="o-envelope" autocomplete="username" />
             </div>
 
             <div class="mt-4">

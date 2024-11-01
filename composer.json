@@ -8,6 +8,8 @@
         "php": "^8.2",
         "afatmustafa/blade-hugeicons": "^0.0.3",
         "codeat3/blade-google-material-design-icons": "^1.19",
+        "laravel-lang/common": "^6.4",
+        "laravel-lang/routes": "^1.5",
         "laravel/framework": "^11.0",
         "laravel/jetstream": "^5.2",
         "laravel/sanctum": "^4.0",
@@ -18,7 +20,6 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
-        "laravel-lang/common": "^6.2",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",
@@ -44,7 +45,8 @@
             "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "@php artisan lang:update"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""

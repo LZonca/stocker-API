@@ -32,7 +32,7 @@ class Produit extends Model
             return $value;
         }
 
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->nom) . '&color=7F9CF5&background=EBF4FF';
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->nom) . '&color=00000&background=6A8D73'; // &color=00000&background=6A8D73
     }
 
     public function getQuantite()

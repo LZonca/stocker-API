@@ -10,11 +10,11 @@
             @csrf
 
             <div>
-                <x-mary-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus label="{{ __('Name') }}" icon="o-user" />
+                <x-mary-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus label="{{ __('Name') }}" icon-right="o-user" />
             </div>
 
             <div class="mt-4">
-                <x-mary-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" label="{{ __('Email') }}" icon="o-envelope"/>
+                <x-mary-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" label="{{ __('Email') }}" icon-right="o-envelope"/>
             </div>
 
             <div class="mt-4">

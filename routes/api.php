@@ -3,6 +3,10 @@
 use App\Http\Controllers\Api\GroupeController;
 use App\Http\Controllers\Api\StockController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Middleware\api\CheckGroupAccess;
+use App\Http\Middleware\api\CheckGroupOwnership;
+use App\Http\Middleware\api\CheckUserSelf;
+use App\Http\Middleware\api\SetLocale;
 use App\Models\UserProduit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -10,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/version', [UserController::class, 'getVersion'])->name('api.version');
 
 
-Route::middleware(['set-locale'])->group(function () {
+Route::middleware([SetLocale::class])->group(function () {
     // Routes d'authentification
     Route::post('/login', [UserController::class, 'login'])->name('api_login'); // Connexion de l'utilisateur
     Route::post('/register', [UserController::class, 'register'])->name('api_login'); // Inscription de l'utilisateur
@@ -51,7 +55,7 @@ Route::middleware(['set-locale'])->group(function () {
 // Routes utilisateurs
         /*Route::get('/users', [UserController::class, 'index']); // Obtenir tous les utilisateurs*/
 
-        Route::middleware(['user-mgroup'])->group(function () {
+        Route::middleware([CheckUserSelf::class])->group(function () {
             Route::patch('/user', [UserController::class, 'update']); // Mettre à jour un utilisateur spécifique
             Route::delete('/users/{user}', [UserController::class, 'destroy']); // Supprimer un utilisateur spécifique
             Route::get('/user/groups', [UserController::class, 'groups']); // Obtenir tous les groupes d'un utilisateur spécifique
@@ -90,11 +94,11 @@ Route::middleware(['set-locale'])->group(function () {
 
         /*Route::get('/groups', [GroupeController::class, 'index']); // Obtenir tous les groupes*/
         // Routes groupes
-        Route::middleware(['group-mgroup'])->group(function () {
+        Route::middleware([CheckGroupAccess::class])->group(function () {
 
             Route::get('/groups/{groupe}', [GroupeController::class, 'show']); // Obtenir un groupe spécifique
 
-            Route::middleware(['owner-mgroup'])->group(function () {
+            Route::middleware([CheckGroupOwnership::class])->group(function () {
                 Route::patch('/groups/{groupe}', [GroupeController::class, 'update']); // Mettre à jour un groupe spécifique
                 Route::delete('/groups/{groupe}', [GroupeController::class, 'destroy']); // Supprimer un groupe spécifique
                 Route::post('/groups/{groupe}/add', [GroupeController::class, 'associateUser'])->name('api.user.associateUser'); // Associer un utilisateur à un groupe
