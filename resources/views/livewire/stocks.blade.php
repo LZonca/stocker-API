@@ -28,17 +28,17 @@
                                 </x-slot:actions>--}}
                             </x-mary-list-item>
                         @empty
-                            <li>No stocks found.</li>
+                            <li>{{__('No stocks found.')}}</li>
                         @endforelse
                     </ul>
                 </div>
             </div>
             <x-mary-modal wire:model="seeCreateModal" title="{{ __('Create a new group') }}" class="text-gray-950 dark:text-gray-200" persistent>
                 <x-mary-form wire:submit="createGroup">
-                    <x-mary-input wire:model="newStockName" label="Name" inline/>
+                    <x-mary-input wire:model="newStockName" label="{{__('Name')}}" inline/>
                     <x-slot:actions>
-                        <x-mary-button wire:click="$toggle('seeCreateModal')" class="" label="Cancel"/>
-                        <x-mary-button wire:click="createStock" class="btn-primary" label="Create"/>
+                        <x-mary-button wire:click="$toggle('seeCreateModal')" class="" label="{{__('Cancel')}}"/>
+                        <x-mary-button wire:click="createStock" class="btn-primary" label="{{__('Create')}}"/>
                     </x-slot:actions>
                 </x-mary-form>
             </x-mary-modal>

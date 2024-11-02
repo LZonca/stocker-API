@@ -10,7 +10,7 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
+        <meta charset="UTF-8">
         @if (env('APP_ENV') == 'local')
             @vite(['resources/css/app.css', 'resources/js/app.js'])
         @elseif(env('APP_ENV') === 'prod')
