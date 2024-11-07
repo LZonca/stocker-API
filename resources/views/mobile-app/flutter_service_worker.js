@@ -123,7 +123,7 @@ self.addEventListener("fetch", (event) => {
   }
   var origin = self.location.origin;
   var key = event.request.url.substring(origin.length + 1);
-  // Redirect URLs to the index.html
+  // Redirect URLs to the index.blade.php
   if (key.indexOf('?v=') != -1) {
     key = key.split('?v=')[0];
   }
@@ -135,7 +135,7 @@ self.addEventListener("fetch", (event) => {
   if (!RESOURCES[key]) {
     return;
   }
-  // If the URL is the index.html, perform an online-first request.
+  // If the URL is the index.blade.php, perform an online-first request.
   if (key == '/') {
     return onlineFirst(event);
   }
