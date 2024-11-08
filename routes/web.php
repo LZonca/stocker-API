@@ -23,7 +23,9 @@ Route::localizedGroup(function () {
     Route::get('/', function () {
         return view('welcome');
     });
-
+    Route::get('/mobile-app/{any?}', function () {
+        return view('mobile-app.index');
+    })->where('any', '^(?!.*\.(js|css|png|jpg|jpeg|svg|json)).*$')->name('mobile-app');
     Route::get('/email/verify', function () {
         return view('auth.verify-email');
     })->middleware('auth')->name('verification.notice');
@@ -47,7 +49,7 @@ Route::localizedGroup(function () {
             return view('dashboard');
         })->name('dashboard');
 
-        Route::get('/mobile-app/{any?}', function () {
+        Route::get('/mobile-app/{any}', function () {
             return view('mobile-app.index');
         })->where('any', '^(?!.*\.(js|css|png|jpg|jpeg|svg|json)).*$')->name('mobile-app');
 
