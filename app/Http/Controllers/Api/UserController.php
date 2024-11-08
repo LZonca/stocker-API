@@ -244,10 +244,11 @@ class UserController extends Controller
                 // Iterate over each produit in the stock
                 foreach ($stock->produits as $produit) {
                     // If user-specific information exists, use it to override the product details
-                    if ($produit->userProduits) {
-                        $produit->nom = $produit->userProduits->custom_name ?? $produit->nom;
-                        $produit->description = $produit->userProduits->custom_description ?? $produit->description;
-                        $produit->image = $produit->userProduits->custom_image ?? $produit->image;
+                    if ($produit->userProduits->isNotEmpty()) {
+                        $userProduit = $produit->userProduits->first();
+                        $produit->nom = $userProduit->custom_name ?? $produit->nom;
+                        $produit->description = $userProduit->custom_description ?? $produit->description;
+                        $produit->image = $userProduit->custom_image ?? $produit->image;
                     }
                 }
             }

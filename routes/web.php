@@ -47,9 +47,10 @@ Route::localizedGroup(function () {
             return view('dashboard');
         })->name('dashboard');
 
-        Route::get('/mobile-app/{any?}', function () {
+        Route::get('/mobile-app/{any}', function () {
             return view('mobile-app.index');
-        })->where('any', '.*');
+        })->where('any', '^(?!.*\.(js|css|png|jpg|jpeg|svg|json)).*$');
+
 
         Route::get('/groups', Groups::class)->name('groups');
         Route::get('/stocks', Stocks::class)->name('stocks');
