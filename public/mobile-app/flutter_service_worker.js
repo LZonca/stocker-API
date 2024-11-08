@@ -7,12 +7,12 @@ const RESOURCES = {"assets/AssetManifest.bin": "3f8ebd6008f07d62311f290bb8abc049
 "assets/AssetManifest.bin.json": "da2fde494adf33e1d3f2f03de18f7014",
 "assets/AssetManifest.json": "e2509702e94fc71bd177e30d2de01f08",
 "assets/FontManifest.json": "dc3d03800ccca4601324923c0b1d6d57",
-"assets/fonts/MaterialIcons-Regular.otf": "8865aaaafc9f16b5693a50108bfdb124",
+"assets/fonts/MaterialIcons-Regular.otf": "70b4e8b759fe46b4dd30a61ffdfe5cf3",
 "assets/lib/assets/lang/en.json": "36e2f445fcb08ec040f3abc2717bc57f",
 "assets/lib/assets/lang/fr.json": "16523850a7bb57f18dee2967b7a817ad",
 "assets/lib/assets/media/placeholder.jpg": "4df993bca7e6a8606c002ed7c0f13bf1",
 "assets/lib/assets/media/stocker.png": "9e5d82bb5e2bf5f66ef3380dc3cdfa6a",
-"assets/NOTICES": "fbe44719fe835b6ab7929b7e0adeff2b",
+"assets/NOTICES": "1bad3814300fb74197ce9d1ac9ef1dad",
 "assets/packages/cupertino_icons/assets/CupertinoIcons.ttf": "e986ebe42ef785b27164c36a9abc7818",
 "assets/shaders/ink_sparkle.frag": "ecc85a2e95f5e9f53123dcaf8cb9b6ce",
 "canvaskit/canvaskit.js": "66177750aff65a66cb07bb44b8c6422b",
@@ -27,14 +27,14 @@ const RESOURCES = {"assets/AssetManifest.bin": "3f8ebd6008f07d62311f290bb8abc049
 "canvaskit/skwasm.worker.js": "89990e8c92bcb123999aa81f7e203b1c",
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
 "flutter.js": "f393d3c16b631f36852323de8e583132",
-"flutter_bootstrap.js": "5745d64f4a17f91aa2a54d7fd65705c0",
+"flutter_bootstrap.js": "097d6638e20e95f288eeeb833a14cecb",
 "icons/Icon-192.png": "ac9a721a12bbc803b44f645561ecb1e1",
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
 "icons/Icon-maskable-192.png": "c457ef57daa1d16f64b27b786ec2ea3c",
 "icons/Icon-maskable-512.png": "301a7604d45b3e739efc881eb04896ea",
-"index.html": "b4f204f71a5775507dda42836c577d53",
-"/": "b4f204f71a5775507dda42836c577d53",
-"main.dart.js": "af851decf8bb7f0e2856ebdddb4e3eb8",
+"index.html": "f9baf77b7d9263db84b9d5529e41f635",
+"/": "f9baf77b7d9263db84b9d5529e41f635",
+"main.dart.js": "019bf2c075a4e138c51db28f44ad76f0",
 "manifest.json": "90f239de6a9872d4c8f11bccb205f4fa",
 "version.json": "35df998cf866ec4b814ef32185448146"};
 // The application shell files that are downloaded before a service worker can
@@ -123,7 +123,7 @@ self.addEventListener("fetch", (event) => {
   }
   var origin = self.location.origin;
   var key = event.request.url.substring(origin.length + 1);
-  // Redirect URLs to the index.blade.php
+  // Redirect URLs to the index.html
   if (key.indexOf('?v=') != -1) {
     key = key.split('?v=')[0];
   }
@@ -135,7 +135,7 @@ self.addEventListener("fetch", (event) => {
   if (!RESOURCES[key]) {
     return;
   }
-  // If the URL is the index.blade.php, perform an online-first request.
+  // If the URL is the index.html, perform an online-first request.
   if (key == '/') {
     return onlineFirst(event);
   }
