@@ -7,6 +7,7 @@ use App\Http\Middleware\api\CheckGroupAccess;
 use App\Http\Middleware\api\CheckGroupOwnership;
 use App\Http\Middleware\api\CheckUserSelf;
 use App\Http\Middleware\api\SetLocale;
+use App\Models\ShoppingList;
 use App\Models\UserProduit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -70,6 +71,14 @@ Route::middleware([SetLocale::class])->group(function () {
             Route::get('/user/stocks/{stock}', [StockController::class, 'show'])->name('api.stock.show'); // Obtenir un stock spécifique d'un utilisateur spécifique
             Route::put('/user/stocks/{stock}', [StockController::class, 'update'])->name('api.stock.update'); // Mettre à jour un stock spécifique d'un utilisateur spécifique
             Route::delete('/user/stocks/{stock}', [StockController::class, 'destroy'])->name('api.stock.destroy'); // Supprimer un stock spécifique d'un utilisateur spécifique
+
+            Route::get('/user/stocks/{stock}/lists', [ShoppingList::class, 'shoppingLists'])->name('api.stock.shoppingLists'); // Obtenir toutes les listes de courses d'un stock spécifique d'un utilisateur
+            Route::post('/user/stocks/{stock}/lists', [ShoppingList::class, 'addShoppingList'])->name('api.stock.addShoppingList'); // Ajouter une liste de courses à un stock spécifique d'un utilisateur
+            Route::get('/user/stocks/{stock}/lists/{list}', [ShoppingList::class, 'showShoppingList'])->name('api.stock.showShoppingList'); // Obtenir une liste de courses spécifique d'un stock spécifique d'un utilisateur
+            Route::patch('/user/stocks/{stock}/lists/{list}', [ShoppingList::class, 'editShoppingList'])->name('api.stock.editShoppingList'); // Mettre à jour une liste de courses spécifique d'un stock spécifique d'un utilisateur
+            Route::delete('/user/stocks/{stock}/lists/{list}', [ShoppingList::class, 'deleteShoppingList'])->name('api.stock.deleteShoppingList'); // Supprimer une liste de courses spécifique d'un stock spécifique d'un utilisateur
+            Route::patch('/user/stocks/{stock}/lists/{list}/products', [ShoppingList::class, 'addProductToShoppingList'])->name('api.stock.addProductToShoppingList'); // Ajouter un produit à une liste de courses spécifique d'un stock spécifique d'un utilisateur
+            Route::delete('/user/stocks/{stock}/lists/{list}/products/{product}', [ShoppingList::class, 'removeProductFromShoppingList'])->name('api.stock.removeProductFromShoppingList'); // Retirer un produit d'une liste de courses spécifique d'un stock spécifique d'un utilisateur
 
             // Routes produits
             Route::get('/groups/{groupe}/stocks/{stock}/produits/{product}', [GroupeController::class, 'showProductInGroupStock'])->name('api.group.stock.showProduct');

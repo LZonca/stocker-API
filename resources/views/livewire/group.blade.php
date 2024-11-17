@@ -12,7 +12,7 @@
             <div class="mt-6 text-gray-500">
                 <ul>
                     @forelse ($groupStocks as $stock)
-                        <x-mary-list-item :item="$stock" link='' no-separator class="hover:accent-gray-700 hover:text-blue-50">
+                        <x-mary-list-item :item="$stock" link='/groups/{{$group->id}}/stocks/{{$stock->id}}/' no-separator class="hover:accent-gray-700 hover:text-blue-50">
                             <x-slot:avatar>
                                 <img src="{{$stock->image != null ? $stock->image : asset('stocker.png')  }}" alt="" class="btn-circle" />
                             </x-slot:avatar>

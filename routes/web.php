@@ -51,6 +51,9 @@ Route::localizedGroup(function () {
 
 
         Route::get('/groups', Groups::class)->name('groups');
+        Route::get('/groups/{groupe}/stocks/{stock}', \App\Livewire\GroupStock::class)->name('groups.stocks-stock');
+        Route::get('/groups/{groupe}/stocks/{stock}/products/{product}', \App\Livewire\GroupProduit::class)->name('groups.stocks-stock.products-product');
+
         Route::get('/stocks', Stocks::class)->name('stocks');
         Route::get('/stocks/{stock}', StockView::class)->name('stock.view');
         Route::get('/groups/{group}', GroupView::class)->name('group.view');

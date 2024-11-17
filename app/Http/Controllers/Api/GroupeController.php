@@ -66,21 +66,21 @@ class GroupeController extends Controller
     {
         $groupe->load('stocks.produits', 'members', 'proprietaire');
 
-        // Fetch the user-specific information for each product
+        // Fetch the group-specific information for each product
         foreach ($groupe->stocks as $stock) {
             foreach ($stock->produits as $produit) {
-                $userProduit = UserProduit::where('user_id', $request->user()->id)
+                $groupProduit = UserProduit::where('group_id', $groupe->id)
                     ->where('produit_id', $produit->id)
                     ->first();
 
-                // If user-specific information exists, use it to override the product details
-                if ($userProduit) {
-                    $produit->nom = $userProduit->custom_name ?? $produit->nom;
-                    $produit->code = $userProduit->custom_code ?? $produit->code;
-                    $produit->description = $userProduit->custom_description ?? $produit->description;
-                    $produit->expiry_date = $userProduit->custom_expiry_date ?? $produit->expiry_date;
-                    $produit->prix = $userProduit->custom_price ?? $produit->prix;
-                    $produit->image = $userProduit->custom_image ?? $produit->image;
+                // If group-specific information exists, use it to override the product details
+                if ($groupProduit) {
+                    $produit->nom = $groupProduit->custom_name ?? $produit->nom;
+                    $produit->code = $groupProduit->custom_code ?? $produit->code;
+                    $produit->description = $groupProduit->custom_description ?? $produit->description;
+                    $produit->expiry_date = $groupProduit->custom_expiry_date ?? $produit->expiry_date;
+                    $produit->prix = $groupProduit->custom_price ?? $produit->prix;
+                    $produit->image = $groupProduit->custom_image ?? $produit->image;
                 }
             }
         }
