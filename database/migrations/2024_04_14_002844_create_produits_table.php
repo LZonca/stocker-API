@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->date('expiry_date')->nullable();
             $table->integer('quantite')->default(0);
-            $table->foreignId('categorie_id')->nullable()->constrained();
             $table->timestamps();
 
             // Add a unique constraint on stock_id and nom
