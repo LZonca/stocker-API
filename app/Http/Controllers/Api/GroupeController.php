@@ -7,9 +7,7 @@ use App\Models\Groupe;
 use App\Models\Produit;
 use App\Models\Stock;
 use App\Models\User;
-use App\Models\UserProduit;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class GroupeController extends Controller
@@ -65,26 +63,6 @@ class GroupeController extends Controller
     public function show(Request $request, Groupe $groupe)
     {
         $groupe->load('stocks.produits', 'members', 'proprietaire');
-
-        // Fetch the group-specific information for each product
-        foreach ($groupe->stocks as $stock) {
-            foreach ($stock->produits as $produit) {
-                $groupProduit = UserProduit::where('group_id', $groupe->id)
-                    ->where('produit_id', $produit->id)
-                    ->first();
-
-                // If group-specific information exists, use it to override the product details
-                if ($groupProduit) {
-                    $produit->nom = $groupProduit->custom_name ?? $produit->nom;
-                    $produit->code = $groupProduit->custom_code ?? $produit->code;
-                    $produit->description = $groupProduit->custom_description ?? $produit->description;
-                    $produit->expiry_date = $groupProduit->custom_expiry_date ?? $produit->expiry_date;
-                    $produit->prix = $groupProduit->custom_price ?? $produit->prix;
-                    $produit->image = $groupProduit->custom_image ?? $produit->image;
-                }
-            }
-        }
-
         return response()->json($groupe);
     }
 
@@ -104,24 +82,6 @@ class GroupeController extends Controller
         // Load the produits relationship on the stock
         $stock->load('produits');
 
-        // Iterate over each product in the stock
-        foreach ($stock->produits as $product) {
-            // Find the UserProduit entry for the given user and product
-            $userProduit = UserProduit::where('group_id', $request->user()->id)
-                ->where('produit_id', $product->id)
-                ->first();
-
-            // Check if the UserProduit entry exists
-            if ($userProduit) {
-                // Update the UserProduit entry with the new product details
-                $userProduit->custom_name = $request->nom ?? $userProduit->custom_name;
-                $userProduit->custom_code = $request->code ?? $userProduit->custom_code;
-                $userProduit->custom_description = $request->description ?? $userProduit->custom_description;
-                $userProduit->custom_image = $request->image ?? $userProduit->custom_image;
-                $userProduit->custom_expiry_date = $request->expiry_date ?? $userProduit->custom_expiry_date;
-                $userProduit->save();
-            }
-        }
 
         return response()->json($stock);
     }
@@ -269,20 +229,6 @@ class GroupeController extends Controller
             return response()->json(['message' => __('This product does not exist in this stock.')], 404);
         }
 
-        // Find the UserProduit entry for the given user and product
-        $userProduit = UserProduit::where('group_id', $request->user()->id)
-            ->where('produit_id', $product->id)
-            ->first();
-
-        // Update the UserProduit entry with the new product details
-        $userProduit->custom_name = $request->nom ?? $userProduit->custom_name;
-        $userProduit->custom_description = $request->description ?? $userProduit->custom_description;
-        $userProduit->custom_code = $request->code ?? $userProduit->custom_code;
-        $userProduit->custom_image = $request->image ?? $userProduit->custom_image;
-        $userProduit->custom_price = $request->prix ?? $userProduit->custom_price;
-        $userProduit->custom_expiry_date = $request->expiry_date ?? $userProduit->custom_expiry_date;
-        $userProduit->save();
-
         return response()->json(['message' => __('Product updated successfully.')], 200);
     }
 
@@ -379,7 +325,7 @@ class GroupeController extends Controller
         return response()->json(['message' => __('User has been removed from the group.')], 200);
     }
 
-    public function groupStockProducts(Request $request, Groupe $groupe, Stock $stock)
+    public function groupStockProducts(Groupe $groupe, Stock $stock)
     {
         // Check if the stock is associated with the group
         if ($stock->groupe_id != $groupe->id) {
@@ -389,31 +335,8 @@ class GroupeController extends Controller
         // Get the products associated with the stock
         $products = $stock->produits;
 
-        // Prepare an array to hold the products with user-specific information
-        $productsWithUserSpecificInfo = [];
 
-        // Iterate over each product in the stock
-        foreach ($products as $product) {
-            // Find the UserProduit entry for the given user and product
-            $userProduit = UserProduit::where('group_id', $request->user()->id)
-                ->where('produit_id', $product->id)
-                ->first();
-
-            // If user-specific information exists, use it to override the product details
-            if ($userProduit) {
-                $product->code = $userProduit->custom_code ?? $product->code;
-                $product->nom = $userProduit->custom_name ?? $product->nom;
-                $product->description = $userProduit->custom_description ?? $product->description;
-                $product->image = $userProduit->custom_image ?? $product->image;
-                $product->expiry_date = $userProduit->custom_expiry_date ?? $product->expiry_date;
-                $product->prix = $userProduit->custom_price ?? $product->prix;
-            }
-
-            // Add the product with user-specific information to the array
-            $productsWithUserSpecificInfo[] = $product;
-        }
-
-        return response()->json($productsWithUserSpecificInfo);
+        return response()->json($products);
     }
 
 
@@ -450,23 +373,11 @@ class GroupeController extends Controller
 
         if (!$product) {
             // The product is not found, create it
-            $product = Produit::create($request->all());
+            $data = $request->all();
+            $data['quantite'] = 1;
+            Produit::create($data);
         }
 
-        // Add the product to the stock
-        $stock->produits()->attach($product->id, ['quantite' => 1]);
-
-        // Create an entry in the user_produits table
-        $userProduit = new UserProduit;
-        $userProduit->group_id = $request->group()->id;
-        $userProduit->produit_id = $product->id;
-        $userProduit->custom_name = $request->nom;
-        $userProduit->custom_code = $request->code;
-        $userProduit->custom_image = $request->image;
-        $userProduit->custom_description = $request->description;
-        $userProduit->custom_price = $request->prix;
-        $userProduit->custom_expiry_date = $request->expiry_date;
-        $userProduit->save();
 
         return response()->json(['message' => __('Product added to the stock successfully.')], 200);
     }
@@ -514,9 +425,7 @@ class GroupeController extends Controller
         if (!$pivot) {
             return response()->json(['message' => __('This product does not exist in this stock.')], 404);
         }
-
-        // Update the product quantity
-        $stock->produits()->updateExistingPivot($product->id, ['quantite' => $request->quantite]);
+        $product->quantite = $request->quantite;
 
         return response()->json(['message' => __('Product quantity updated successfully.')], 200);
     }

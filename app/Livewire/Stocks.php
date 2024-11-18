@@ -9,8 +9,8 @@ use Mary\Traits\Toast;
 
 class Stocks extends Component
 {
+    use Toast;
 
-    Use Toast;
     public $stocks = [];
     public bool $seeCreateModal;
     public string $newStockName;
@@ -23,13 +23,7 @@ class Stocks extends Component
 
     public function refreshStocks(): void
     {
-        $this->stocks = Auth::user()->stocks()->with([
-            'produits' => function ($query) {
-                $query->with(['userProduits' => function ($query) {
-                    $query->where('user_id', Auth::id());
-                }]);
-            },
-        ])->get();
+        $this->stocks = Auth::user()->stocks()->with('produits')->get();
     }
 
     public function createStock(): void
@@ -51,6 +45,7 @@ class Stocks extends Component
 
         $this->newStockName = '';
     }
+
     public function render()
     {
         return view('livewire.stocks')->layout('layouts.app');

@@ -3,7 +3,6 @@
         <div class="bg-white dark:bg-gray-900 overflow-hidden shadow-xl sm:rounded-lg">
             <div class="mt-6 text-gray-500">
                 <x-mary-header title="{{ $stock->nom }}" subtitle="{{ $stock->description ?? __('No description') }}" >
-
                     <x-slot:actions>
                         <x-mary-button icon="o-plus" wire:click="$toggle('seeCreateModal')" spinner class="btn-circle"/>
                     </x-slot:actions>
@@ -12,14 +11,13 @@
                     @forelse ($products as $product)
                         <x-mary-list-item :item="$product" link="/stocks/{{$stock->id}}/products/{{$product->id}}">
                             <x-slot:avatar>
-                                <x-mary-avatar image="{{ $userProduits[$product->id]->image }}" alt="Product image" />
+                                <x-mary-avatar image="{{ $product->image }}" alt="Product image" />
                             </x-slot:avatar>
-
                             <x-slot:value>
-                                <p class="text-gray-900 dark:text-white">{{ $userProduits[$product->id]->custom_name ?? $product->name }}</p>
+                                <p class="text-gray-900 dark:text-white">{{ $product->custom_name ?? $product->nom }}</p>
                             </x-slot:value>
                             <x-slot:sub-value>
-                                <p class="text-gray-500 dark:text-gray-400">{{ $userProduits[$product->id]->custom_code ?? $product->code }}</p>
+                                <p class="text-gray-500 dark:text-gray-400">{{ $product->custom_code ?? $product->code }}</p>
                             </x-slot:sub-value>
                         </x-mary-list-item>
                     @empty

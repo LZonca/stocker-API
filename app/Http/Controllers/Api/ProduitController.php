@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Produit;
-use App\Models\UserProduit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -48,22 +47,8 @@ class ProduitController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, Produit $produit)
+    public function show(Produit $produit)
     {
-        // Fetch the user-specific information for the product
-        $userProduit = UserProduit::where('user_id', $request->user()->id)
-            ->where('produit_id', $produit->id)
-            ->first();
-
-        // If user-specific information exists, use it to override the product details
-        if ($userProduit) {
-            $produit->nom = $userProduit->custom_name ?? $produit->nom;
-            $produit->description = $userProduit->custom_description ?? $produit->description;
-            $produit->image = $userProduit->custom_image ?? $produit->image;
-            $produit->prix = $userProduit->custom_price ?? $produit->prix;
-            $produit->expiry_date = $userProduit->custom_expiry_date ?? $produit->expiry_date;
-        }
-
         return response()->json($produit);
     }
 

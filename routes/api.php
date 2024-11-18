@@ -8,7 +8,6 @@ use App\Http\Middleware\api\CheckGroupOwnership;
 use App\Http\Middleware\api\CheckUserSelf;
 use App\Http\Middleware\api\SetLocale;
 use App\Models\ShoppingList;
-use App\Models\UserProduit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,26 +29,7 @@ Route::middleware([SetLocale::class])->group(function () {
 
         // Obtenir l'utilisateur authentifié
         Route::get('/user', function (Request $request) {
-
             $request->user()->load('stocks.produits', 'groupes.stocks.produits', 'groupes.members', 'groupes.proprietaire');
-
-            // Fetch the user-specific information for each product
-            foreach ( $request->user()->stocks as $stock) {
-                foreach ($stock->produits as $produit) {
-                    $userProduit = UserProduit::where('user_id', $request->user()->id)
-                        ->where('produit_id', $produit->id)
-                        ->first();
-
-                    // If user-specific information exists, use it to override the product details
-                    if ($userProduit) {
-                        $produit->nom = $userProduit->custom_name ?? $produit->nom;
-                        $produit->code = $userProduit->custom_code ?? $produit->code;
-                        $produit->description = $userProduit->custom_description ?? $produit->description;
-                        $produit->image = $userProduit->custom_image ?? $produit->image;
-                    }
-                }
-            }
-
             return response()->json( $request->user());
         });
 

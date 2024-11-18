@@ -20,7 +20,6 @@ class CreateStocksTable extends Migration
             $table->unsignedBigInteger('proprietaire_id')->nullable();
             $table->foreignId('groupe_id')->nullable()->constrained()->onDelete('set null');
             $table->timestamps();
-
             $table->foreign('proprietaire_id')->references('id')->on('users');
             $table->foreign('groupe_id')->references('id')->on('groupes');
         });

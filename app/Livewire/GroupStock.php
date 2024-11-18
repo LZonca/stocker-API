@@ -5,7 +5,6 @@ namespace App\Livewire;
 use App\Models\Groupe;
 use App\Models\Produit;
 use App\Models\Stock;
-use App\Models\UserProduit;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Mary\Traits\Toast;
@@ -17,7 +16,6 @@ class GroupStock extends Component
     public $stock;
     public $groupe;
     public $products = [];
-    public $userProduits = [];
     public $newProductName ='';
     public $newProductDescription ='';
     public $newProductCode ='';
@@ -30,12 +28,6 @@ class GroupStock extends Component
         $this->stock = Stock::findOrFail($stock);
         $this->groupe = Groupe::findOrFail($groupe);
         $this->products = $this->stock->produits;
-
-        // Fetch UserProduits for the current user and products in the stock
-        $this->userProduits = UserProduit::where('group_id', $this->groupe->id)
-            ->whereIn('produit_id', $this->products->pluck('id'))
-            ->get()
-            ->keyBy('produit_id');
     }
 
     public function createProduct()
@@ -47,21 +39,14 @@ class GroupStock extends Component
         ]);
 
         $newProduit = new Produit();
+        $newProduit->stock_id = $this->stock->id;
         $newProduit->nom = $this->newProductName;
         $newProduit->description = $this->newProductDescription;
         $newProduit->code = $this->newProductCode;
+        $newProduit->quantite = 1;
         $newProduit->save();
 
-        // Attach the new product to the stock with an initial quantite of 1
-        $this->stock->produits()->attach($newProduit->id, ['quantite' => 1]);
-
         // Create a UserProduit entry
-        $userProduit = new UserProduit();
-        $userProduit->group_id = $this->groupe->id;
-        $userProduit->produit_id = $newProduit->id;
-        $userProduit->custom_name = $this->newProductName;
-        $userProduit->custom_description = $this->newProductDescription;
-        $userProduit->save();
 
         $this->products = $this->stock->produits;
         $this->seeCreateModal = false;
@@ -70,12 +55,6 @@ class GroupStock extends Component
         $this->newProductName = '';
         $this->newProductDescription = '';
         $this->newProductCode = '';
-
-        // Refresh UserProduits
-        $this->userProduits = UserProduit::where('group_id', Auth::id())
-            ->whereIn('produit_id', $this->products->pluck('id'))
-            ->get()
-            ->keyBy('produit_id');
     }
 
     public function render()
@@ -83,7 +62,6 @@ class GroupStock extends Component
         return view('livewire.group-stock', [
             'stock' => $this->stock,
             'products' => $this->products,
-            'userProduits' => $this->userProduits,
         ])->layout('layouts.app');
     }
 }

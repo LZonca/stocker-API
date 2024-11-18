@@ -16,7 +16,7 @@ class Stock extends Model
 
     public function produits()
     {
-        return $this->belongsToMany(Produit::class)->withPivot('quantite');
+        return $this->hasMany(Produit::class);
     }
 
     public function proprietaire()
@@ -29,16 +29,11 @@ class Stock extends Model
         return $this->belongsTo(Groupe::class);
     }
 
-    public function stocks()
-    {
-        return $this->belongsToMany(Stock::class);
-    }
     public function getImageAttribute($value): string
     {
         if ($value) {
             return $value;
         }
-
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->nom) . '&color=7F9CF5&background=EBF4FF';
     }
 }

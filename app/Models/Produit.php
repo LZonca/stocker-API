@@ -9,21 +9,16 @@ class Produit extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['code', 'nom', 'description', 'prix', 'image', 'expiry_date', 'categorie_id'];
+    protected $fillable = ['stock_id', 'group_id', 'code', 'nom', 'description', 'prix', 'image', 'expiry_date', 'quantite', 'categorie_id'];
+
+    public function stock()
+    {
+        return $this->belongsTo(Stock::class);
+    }
 
     public function categorie()
     {
         return $this->belongsTo(Categorie::class);
-    }
-
-    public function stocks()
-    {
-        return $this->belongsToMany(Stock::class)->withPivot('quantite');
-    }
-
-    public function userProduits()
-    {
-        return $this->hasMany(UserProduit::class);
     }
 
     public function getImageAttribute($value): string

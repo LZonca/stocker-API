@@ -33,14 +33,4 @@ class StockFactory extends Factory
      *
      * @return $this
      */
-    public function configure()
-    {
-        return $this->afterCreating(function (Stock $stock) {
-            // Create a product
-            $product = Produit::factory()->create();
-
-            // Attach the product to the stock
-            $stock->produits()->attach($product->id, ['quantite' => 1]);
-        });
-    }
 }

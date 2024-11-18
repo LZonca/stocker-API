@@ -3,10 +3,9 @@
 namespace App\Livewire;
 
 use App\Models\Produit;
-use App\Models\UserProduit;
+use App\Models\Stock;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
-use App\Models\Stock;
 use Mary\Traits\Toast;
 
 class StockView extends Component
@@ -27,12 +26,6 @@ class StockView extends Component
         $this->seeCreateModal = false;
         $this->stock = Stock::findOrFail($stock);
         $this->products = $this->stock->produits;
-
-        // Fetch UserProduits for the current user and products in the stock
-        $this->userProduits = UserProduit::where('user_id', Auth::id())
-            ->whereIn('produit_id', $this->products->pluck('id'))
-            ->get()
-            ->keyBy('produit_id');
     }
 
     public function createProduct()
@@ -44,35 +37,20 @@ class StockView extends Component
         ]);
 
         $newProduit = new Produit();
+        $newProduit->stock_id = $this->stock->id;
         $newProduit->nom = $this->newProductName;
         $newProduit->description = $this->newProductDescription;
         $newProduit->code = $this->newProductCode;
+        $newProduit->quantite = 1;
         $newProduit->save();
-
-        // Attach the new product to the stock with an initial quantite of 1
-        $this->stock->produits()->attach($newProduit->id, ['quantite' => 1]);
-
-        // Create a UserProduit entry
-        $userProduit = new UserProduit();
-        $userProduit->user_id = Auth::id();
-        $userProduit->produit_id = $newProduit->id;
-        $userProduit->custom_name = $this->newProductName;
-        $userProduit->custom_description = $this->newProductDescription;
-        $userProduit->save();
 
         $this->products = $this->stock->produits;
         $this->seeCreateModal = false;
-        $this->success('ProductView créé avec succès');
+        $this->success('Produit créé avec succès');
 
         $this->newProductName = '';
         $this->newProductDescription = '';
         $this->newProductCode = '';
-
-        // Refresh UserProduits
-        $this->userProduits = UserProduit::where('user_id', Auth::id())
-            ->whereIn('produit_id', $this->products->pluck('id'))
-            ->get()
-            ->keyBy('produit_id');
     }
 
     public function render()
@@ -80,7 +58,6 @@ class StockView extends Component
         return view('livewire.stock', [
             'stock' => $this->stock,
             'products' => $this->products,
-            'userProduits' => $this->userProduits,
         ])->layout('layouts.app');
     }
 }

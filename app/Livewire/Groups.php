@@ -25,11 +25,7 @@ class Groups extends Component
         $this->groups = Auth::user()->groupes()->with([
             'proprietaire',
             'members',
-            'stocks.produits' => function ($query) {
-                $query->with(['userProduits' => function ($query) {
-                    $query->where('user_id', Auth::id());
-                }]);
-            },
+            'stocks.produits'
         ])->get();
     }
 

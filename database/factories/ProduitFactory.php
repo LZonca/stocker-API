@@ -22,11 +22,14 @@ class ProduitFactory extends Factory
     public function definition()
     {
         return [
+            'stock_id' => 1,
             'code' => $this->faker->numerify('PROD###'),
             'nom' => $this->faker->unique()->word, // Ensure 'nom' is unique
             'description' => $this->faker->sentence,
             'prix' => $this->faker->randomFloat(2, 1, 100),
             'image' => null,
+            'expiry_date' => $this->faker->dateTime(),
+            'quantite' => $this->faker->randomDigitNotNull()
         ];
     }
 }

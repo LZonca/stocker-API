@@ -31,7 +31,7 @@
                     @endforelse
                 </ul>
             </div>
-            <x-mary-modal wire:model="seeCreateModal" title="{{ __('Create a new group') }}" class="text-gray-950 dark:text-gray-200" persistent>
+            <x-mary-modal wire:model="seeCreateModal" title="{{ __('Create a new stock') }}" class="text-gray-950 dark:text-gray-200" persistent>
                 <x-mary-form wire:submit="createGroup">
                     <x-mary-input wire:model="newGroupStockName" label="{{__('Name')}}" inline/>
                     <x-slot:actions>

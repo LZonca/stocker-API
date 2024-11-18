@@ -478,7 +478,7 @@
     "Explore the documentation": "Explorer la documentation",
     "Description": "Description",
     "No description": "Pas de description",
-
+    "A stock with the same name already exists.": "Un stock possède déja ce nom.",
     "Stocks": "Stocks",
     "Stock": "Stock",
     "Your stocks": "Vos stocks",
