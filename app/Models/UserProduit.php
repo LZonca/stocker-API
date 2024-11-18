@@ -5,15 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+// app/Models/UserProduit.php
+
 class UserProduit extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'produit_id', 'custom_name', 'custom_image','custom_description', 'custom_code', 'custom_price', 'custom_expiry_date'];
+    protected $fillable = ['user_id', 'group_id', 'produit_id', 'custom_name', 'custom_image', 'custom_description', 'custom_code', 'custom_price', 'custom_expiry_date'];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function group()
+    {
+        return $this->belongsTo(Groupe::class);
     }
 
     public function produit()
@@ -33,7 +40,6 @@ class UserProduit extends Model
         if ($value) {
             return $value;
         }
-
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->custom_name) . '&color=7F9CF5&background=EBF4FF';
     }
 }
