@@ -18,7 +18,6 @@ class GroupStock extends Component
     public $groupe;
     public $products = [];
     public $userProduits = [];
-
     public $newProductName ='';
     public $newProductDescription ='';
     public $newProductCode ='';

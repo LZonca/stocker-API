@@ -458,7 +458,7 @@ class GroupeController extends Controller
 
         // Create an entry in the user_produits table
         $userProduit = new UserProduit;
-        $userProduit->user_id = $request->user()->id;
+        $userProduit->group_id = $request->group()->id;
         $userProduit->produit_id = $product->id;
         $userProduit->custom_name = $request->nom;
         $userProduit->custom_code = $request->code;
