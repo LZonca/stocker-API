@@ -107,7 +107,7 @@ class GroupeController extends Controller
         // Iterate over each product in the stock
         foreach ($stock->produits as $product) {
             // Find the UserProduit entry for the given user and product
-            $userProduit = UserProduit::where('user_id', $request->user()->id)
+            $userProduit = UserProduit::where('group_id', $request->user()->id)
                 ->where('produit_id', $product->id)
                 ->first();
 
@@ -270,7 +270,7 @@ class GroupeController extends Controller
         }
 
         // Find the UserProduit entry for the given user and product
-        $userProduit = UserProduit::where('user_id', $request->user()->id)
+        $userProduit = UserProduit::where('group_id', $request->user()->id)
             ->where('produit_id', $product->id)
             ->first();
 
@@ -395,7 +395,7 @@ class GroupeController extends Controller
         // Iterate over each product in the stock
         foreach ($products as $product) {
             // Find the UserProduit entry for the given user and product
-            $userProduit = UserProduit::where('user_id', $request->user()->id)
+            $userProduit = UserProduit::where('group_id', $request->user()->id)
                 ->where('produit_id', $product->id)
                 ->first();
 
