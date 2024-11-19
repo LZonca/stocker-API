@@ -427,7 +427,7 @@ class GroupeController extends Controller
             return response()->json(['message' => __('Stock not found or does not belong to the group.')], 404);
         }
 
-        $product->quantite = $request->quantite;
+        $product->update($request->quantite);
 
         return response()->json(['message' => __('Product quantity updated successfully.')], 200);
     }
