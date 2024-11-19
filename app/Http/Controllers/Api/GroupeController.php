@@ -162,20 +162,17 @@ class GroupeController extends Controller
         return response()->json(null, 204);
     }
 
-    public function removeStockFromGroup(Request $request, Groupe $groupe, Stock $stock)
+    public function removeStockFromGroup(Groupe $groupe, Stock $stock)
     {
-        // Check if the stock belongs to the group
         if ($groupe->stocks->contains($stock)) {
             $stock->delete();
         }
-
         return response()->json(['message' => __('Successfully removed the stock from the group.')], 200);
     }
 
 
     public function users(Groupe $groupe)
     {
-
         return response()->json($groupe->members()->get());
     }
 
@@ -220,6 +217,8 @@ class GroupeController extends Controller
         if ($existingProduct) {
             return response()->json(['message' => __('A product with the same name and code already exists in this stock.')], 422);
         }
+
+        $product->update($request->only(['nom', 'code', 'description', 'image', 'expiry_date', 'prix']));
 
         return response()->json(['message' => __('Product updated successfully.')], 200);
     }

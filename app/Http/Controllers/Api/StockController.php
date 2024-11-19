@@ -174,9 +174,7 @@ class StockController extends Controller
             return response()->json(['message' => __('Stock not found.')], 404);
         }
 
-        // Update the product quantity
-       $product->quantite = $request->quantite;
-
+        $product->update($request->quantite);
         return response()->json(['message' => __('Product quantity updated successfully.')], 200);
     }
 
@@ -235,8 +233,7 @@ class StockController extends Controller
 
         $product->save();
     } else {
-        $product->quantite = $product->quantite+1;
-        $product->save();
+        $product->update($request->only(['nom', 'code', 'description', 'image', 'expiry_date', 'prix']));
     }
 
     return response()->json([
@@ -271,7 +268,7 @@ class StockController extends Controller
 
         // Check if the product quantity is greater than 1
         if ($product->quantite > 1) {
-            $product->quantite = $product->quantite - 1;
+            $product->update(['quantite' => $product->quantite - 1]);
             return response()->json(['message' => __('Product quantity decreased successfully.')], 200);
         } else {
             $product->delete();

@@ -21,28 +21,28 @@ class ProduitController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
+{
 
-        $validator = Validator::make($request->all(), [
-            'code' => 'nullable|unique:produits|max:255',
-            'nom' => 'required|max:255',
-            'description' => 'nullable|string',
-            'prix' => 'nullable|numeric|min:0',
-            'expiry_date' => 'nullable|date',
-            'image' => 'nullable|image',
-            'categorie_id' => 'nullable|exists:categories,id',
-        ]);
+    $validator = Validator::make($request->all(), [
+        'code' => 'nullable|unique:produits|max:255',
+        'nom' => 'required|max:255',
+        'description' => 'nullable|string',
+        'prix' => 'nullable|numeric|min:0',
+        'expiry_date' => 'nullable|date',
+        'image' => 'nullable|image',
+        'categorie_id' => 'nullable|exists:categories,id',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $produit = new Produit;
-        $produit->fill($request->all());
-        $produit->save();
-
-        return response()->json($produit, 201);
+    if ($validator->fails()) {
+        return response()->json($validator->errors(), 422);
     }
+
+    $produit = new Produit;
+    $produit->fill($request->all());
+    $produit->save();
+
+    return response()->json($produit, 201);
+}
 
     /**
      * Display the specified resource.
@@ -71,8 +71,7 @@ class ProduitController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $produit->fill($request->all());
-        $produit->save();
+        $produit->update($request->only(['nom', 'code', 'description', 'image', 'expiry_date', 'prix']));
 
         return response()->json($produit);
     }
