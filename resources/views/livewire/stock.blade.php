@@ -9,7 +9,7 @@
                 </x-mary-header>
                 <ul>
                     @forelse ($products as $product)
-                        <x-mary-list-item :item="$product" link="/stocks/{{$stock->id}}/products/{{$product->id}}">
+                        <x-mary-list-item :item="$product" link="/stocks/{{$stock->id}}/products/{{$product->id}}" class="bg-white dark:bg-gray-900 text-sm hover:accent-gray-700 hover:text-blue-50">
                             <x-slot:avatar>
                                 <x-mary-avatar image="{{ $product->image }}" alt="Product image" />
                             </x-slot:avatar>

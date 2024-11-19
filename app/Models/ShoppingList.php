@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class ShoppingList extends Model
 {
     use HasFactory;
+    use LogsActivity;
 
     protected $fillable = ['user_id', 'stock_id', 'name'];
 
@@ -15,5 +18,10 @@ class ShoppingList extends Model
     {
         return $this->belongsTo(Stock::class);
     }
-
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('shopping-lists')
+            ->logAll();
+    }
 }

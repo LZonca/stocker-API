@@ -1,8 +1,13 @@
 <?php
 
 use App\Http\Middleware\web\SetLocale;
+use App\Livewire\GroupProduit;
+use App\Livewire\GroupStock;
 use App\Livewire\GroupView;
 use App\Livewire\Groups;
+use App\Livewire\ListsView;
+use App\Livewire\ListView;
+use App\Livewire\LogsView;
 use App\Livewire\ProductView;
 use App\Livewire\Stocks;
 use App\Livewire\StockView;
@@ -51,12 +56,16 @@ Route::localizedGroup(function () {
 
 
         Route::get('/groups', Groups::class)->name('groups');
-        Route::get('/groups/{groupe}/stocks/{stock}', \App\Livewire\GroupStock::class)->name('groups.stocks-stock');
-        Route::get('/groups/{groupe}/stocks/{stock}/products/{product}', \App\Livewire\GroupProduit::class)->name('groups.stocks-stock.products-product');
+        Route::get('/groups/{groupe}/stocks/{stock}', GroupStock::class)->name('groups.stocks-stock');
+        Route::get('/groups/{groupe}/stocks/{stock}/products/{product}', GroupProduit::class)->name('groups.stocks-stock.products-product');
 
         Route::get('/stocks', Stocks::class)->name('stocks');
         Route::get('/stocks/{stock}', StockView::class)->name('stock.view');
         Route::get('/groups/{group}', GroupView::class)->name('group.view');
         Route::get('/stocks/{stock}/products/{product}', ProductView::class)->name('product.view');
+
+        Route::get('/lists', ListsView::class)->name('lists.index');
+        Route::get('/lists/{list}', ListView::class)->name('lists.show');
+        Route::get('/logs', LogsView::class)->name('logs.index');
     });
 });

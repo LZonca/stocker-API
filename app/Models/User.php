@@ -9,10 +9,13 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens;
+    use LogsActivity;
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
@@ -79,5 +82,12 @@ class User extends Authenticatable implements MustVerifyEmail
     public function shoppingLists()
     {
         return $this->hasMany(ShoppingList::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('user')
+            ->logAll();
     }
 }

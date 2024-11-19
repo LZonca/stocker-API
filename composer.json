@@ -7,7 +7,10 @@
     "require": {
         "php": "^8.2",
         "afatmustafa/blade-hugeicons": "^0.0.3",
+        "codeat3/blade-carbon-icons": "^2.30",
+        "codeat3/blade-eos-icons": "^1.14",
         "codeat3/blade-google-material-design-icons": "^1.19",
+        "codeat3/blade-vaadin-icons": "^1.5",
         "laravel-lang/common": "^6.4",
         "laravel-lang/routes": "^1.5",
         "laravel/framework": "^11.0",
@@ -15,8 +18,9 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.5",
-        "owenvoke/blade-fontawesome": "^2.6",
-        "robsontenorio/mary": "^1.41"
+        "owenvoke/blade-fontawesome": "^2.7",
+        "robsontenorio/mary": "^1.41",
+        "spatie/laravel-activitylog": "^4.9"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

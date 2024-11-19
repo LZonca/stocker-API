@@ -22,9 +22,13 @@
                             <x-slot:sub-value>
 
                             </x-slot:sub-value>
-                            {{--<x-slot:actions>
-                                <x-mary-button icon="o-trash" class="text-red-500" wire:click="delete(1)" spinner />
-                            </x-slot:actions>--}}
+                            <x-slot:actions>
+                                <x-mary-dropdown>
+                                    <x-mary-menu-item title="Archive" icon="o-archive-box" />
+                                    <x-mary-menu-item title="Remove" icon="o-trash" />
+                                    <x-mary-menu-item title="Restore" icon="o-arrow-path" />
+                                </x-mary-dropdown>
+                            </x-slot:actions>
                         </x-mary-list-item>
                     @empty
                         <li>{{__('No stocks found.')}}</li>

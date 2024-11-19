@@ -15,7 +15,7 @@
                     <ul>
 
                         @forelse ($groups as $group)
-                            <x-mary-list-item :item="$group" link='/groups/{{$group->id}}' no-separator class="bg-white dark:bg-gray-900 text-sm">
+                            <x-mary-list-item :item="$group" link='/groups/{{$group->id}}' no-separator class="bg-white dark:bg-gray-900 text-sm hover:accent-gray-700 hover:text-blue-50">
                                 <x-slot:avatar>
                                     <img src="{{$group->image }}" alt="Group image" class="btn-circle" />
                                 </x-slot:avatar>
@@ -34,9 +34,13 @@
                                         </x-slot:content>
                                     </x-mary-popover>
                                 </x-slot:sub-value>
-                                {{--<x-slot:actions>
-                                    <x-mary-button icon="o-trash" class="text-red-500" --}}{{--wire:click="delete(1)" --}}{{--spinner />
-                                </x-slot:actions>--}}
+                                <x-slot:actions>
+                                    <x-mary-dropdown>
+                                        <x-mary-menu-item title="Archive" icon="o-archive-box" />
+                                        <x-mary-menu-item title="Remove" icon="o-trash" />
+                                        <x-mary-menu-item title="Restore" icon="o-arrow-path" />
+                                    </x-mary-dropdown>
+                                </x-slot:actions>
                             </x-mary-list-item>
                         @empty
                             <li>{{__('No groups found.')}}</li>

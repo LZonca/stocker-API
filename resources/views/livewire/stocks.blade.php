@@ -13,7 +13,7 @@
                 <div class="mt-6 text-gray-500">
                     <ul>
                         @forelse ($stocks as $stock)
-                            <x-mary-list-item :item="$stock" link='/stocks/{{$stock->id }}' no-separator class="hover:accent-gray-700 hover:text-blue-50">
+                            <x-mary-list-item :item="$stock" link='/stocks/{{$stock->id }}' no-separator class="hover:accent-gray-700 hover:text-blue-50 bg-white dark:bg-gray-900 text-sm">
                                 <x-slot:avatar>
                                     <img src="{{$stock->image != null ? $stock->image : asset('stocker.png')  }}" alt="" class="btn-circle" />
                                 </x-slot:avatar>
@@ -23,9 +23,13 @@
                                 <x-slot:sub-value>
 
                                 </x-slot:sub-value>
-                                {{--<x-slot:actions>
-                                    <x-mary-button icon="o-trash" class="text-red-500" wire:click="delete(1)" spinner />
-                                </x-slot:actions>--}}
+                                <x-slot:actions>
+                                    <x-mary-dropdown>
+                                        <x-mary-menu-item title="Archive" icon="o-archive-box" />
+                                        <x-mary-menu-item title="Remove" icon="o-trash" />
+                                        <x-mary-menu-item title="Restore" icon="o-arrow-path" />
+                                    </x-mary-dropdown>
+                                </x-slot:actions>
                             </x-mary-list-item>
                         @empty
                             <li>{{__('No stocks found.')}}</li>

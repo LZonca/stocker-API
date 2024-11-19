@@ -10,16 +10,23 @@
                 </x-mary-header>
                 <ul>
                     @forelse ($products as $product)
-                        <x-mary-list-item :item="$product" link="/groups/{{$stock->groupe->id}}/stocks/{{$stock->id}}/products/{{$product->id}}">
+                        <x-mary-list-item :item="$product" link="/groups/{{$stock->groupe->id}}/stocks/{{$stock->id}}/products/{{$product->id}}" class="hover:accent-gray-700 hover:text-blue-50">
                             <x-slot:avatar>
-                                <x-mary-avatar image="{{ $userProduits[$product->id]->image ?? 'default-image-url' }}" alt="Product image" />
+                                <x-mary-avatar image="{{$product->image ?? 'default-image-url' }}" alt="Product image" />
                             </x-slot:avatar>
-                            <x-slot:value>
-                                <p class="text-gray-900 dark:text-white">{{ $userProduits[$product->id]->custom_name ?? $product->name }}</p>
+                            <x-slot:value class="text-gray-900 dark:text-white">
+                                {{ $product->nom  ?? 'N/A' }}
                             </x-slot:value>
                             <x-slot:sub-value>
-                                <p class="text-gray-500 dark:text-gray-400">{{ $userProduits[$product->id]->custom_code ?? $product->code }}</p>
+                                <p class="text-gray-500 dark:text-gray-400">{{ $product->code ?? 'N/A'}}</p>
                             </x-slot:sub-value>
+                            {{--<x-slot:actions>
+                                <x-mary-dropdown>
+                                    <x-mary-menu-item title="Archive" icon="o-archive-box" />
+                                    <x-mary-menu-item title="Remove" icon="o-trash" />
+                                    <x-mary-menu-item title="Restore" icon="o-arrow-path" />
+                                </x-mary-dropdown>
+                            </x-slot:actions>--}}
                         </x-mary-list-item>
                     @empty
                         <li>{{__('No products found.')}}</li>
