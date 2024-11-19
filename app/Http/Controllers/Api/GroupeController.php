@@ -341,7 +341,7 @@ class GroupeController extends Controller
 
 
 
-    public function addProduct(Stock $stock, Request $request)
+    public function addProduct(Request $request, Groupe $groupe, Stock $stock)
     {
         $validator = Validator::make($request->all(), [
             'nom' => 'required|string|max:255',
@@ -356,11 +356,9 @@ class GroupeController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $stock = $request->user()->stocks->find($stock->id);
-
-        // Check if the stock exists
-        if (!$stock) {
-            return response()->json(['message' => __('Stock not found.')], 404);
+        // Verify that the stock belongs to the groupe
+        if (!$groupe->stocks()->where('id', $stock->id)->exists()) {
+            return response()->json(['message' => __('Stock does not belong to this group.')], 403);
         }
 
         // Check if a product with the same name already exists in the stock
@@ -368,6 +366,7 @@ class GroupeController extends Controller
             ->where('nom', $request->nom)
             ->where('code', $request->code)
             ->first();
+
         if ($existingProduct) {
             return response()->json(['message' => __('A product with the same name and code already exists in this stock.')], 422);
         }
@@ -375,28 +374,31 @@ class GroupeController extends Controller
         $product = Produit::where('nom', $request->nom)->first();
 
         if (!$product) {
+
             // Create a new product with all required fields
             $product = new Produit();
             $product->nom = $request->nom;
-            $product->code = $request->code ?? ''; // Default empty string if null
+            $product->code = $request->code;
             $product->description = $request->description;
             $product->prix = $request->prix;
             $product->image = $request->image;
             $product->expiry_date = $request->expiry_date;
             $product->quantite = 1; // Default quantity
             $product->stock_id = $stock->id;
-            $product->categorie_id = $request->categorie_id ?? null;
 
             /* // Handle image upload if present
-             if ($request->hasFile('image')) {
-                 $path = $request->file('image')->store('products', 'public');
-                 $product->image = $path;
-             }*/
-
+            if ($request->hasFile('image')) {
+                $path = $request->file('image')->store('products', 'public');
+                $product->image = $path;
+            }*/
             $product->save();
         } else {
-            $product->quantite = $product->quantite+1;
+            $product->quantite = $product->quantite + 1;
             $product->save();
+            return response()->json([
+                'message' => __('Product quantity incremented.'),
+                'product' => $product
+            ], 200);
         }
 
         return response()->json([

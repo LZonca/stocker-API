@@ -182,7 +182,7 @@ class StockController extends Controller
     }
 
 
-    public function addProduct(Stock $stock, Request $request)
+    public function addProduct(Request $request, Stock $stock, )
 {
     $validator = Validator::make($request->all(), [
         'nom' => 'required|string|max:255',
