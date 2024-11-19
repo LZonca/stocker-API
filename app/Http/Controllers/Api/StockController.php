@@ -220,8 +220,10 @@ class StockController extends Controller
             $product = Produit::create($request->all());
         }
 
-        // Add the product to the stock
         $product->quantite = 1;
+        $product->stock_id = $stock->id;
+
+        $product->save();
 
 
         return response()->json(['message' => __('Product added to the stock successfully.')], 200);

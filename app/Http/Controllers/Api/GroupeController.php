@@ -373,9 +373,12 @@ class GroupeController extends Controller
 
         if (!$product) {
             // The product is not found, create it
-            $data = $request->all();
-            $data['quantite'] = 1;
-            Produit::create($data);
+            Produit::create($request->all());
+            // Add the product to the stock
+            $product->quantite = 1;
+            $product->stock_id = $stock->id;
+
+            $product->save();
         }
 
 
@@ -393,9 +396,6 @@ class GroupeController extends Controller
         if (!$stock->produits()->where('produit_id', $product->id)->exists()) {
             return response()->json(['message' => __('This product does not exist in this stock.')], 404);
         }
-
-        // Dissociate the product from the stock
-        $stock->produits()->detach($product);
 
         return response()->json(['message' => __('Product removed from the stock successfully.')], 200);
     }
