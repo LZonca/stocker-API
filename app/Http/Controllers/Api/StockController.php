@@ -183,51 +183,68 @@ class StockController extends Controller
 
 
     public function addProduct(Stock $stock, Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'nom' => 'required|string|max:255',
-            'code' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'image' => 'nullable|image',
-            'expiry_date' => 'nullable|date',
-            'prix' => 'nullable|numeric|min:0',
-        ]);
+{
+    $validator = Validator::make($request->all(), [
+        'nom' => 'required|string|max:255',
+        'code' => 'nullable|string|max:255',
+        'description' => 'nullable|string',
+        'image' => 'nullable|image',
+        'expiry_date' => 'nullable|date',
+        'prix' => 'nullable|numeric|min:0',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
+    if ($validator->fails()) {
+        return response()->json($validator->errors(), 422);
+    }
 
-        $stock = $request->user()->stocks->find($stock->id);
+    $stock = $request->user()->stocks->find($stock->id);
 
-        // Check if the stock exists
-        if (!$stock) {
-            return response()->json(['message' => __('Stock not found.')], 404);
-        }
+    // Check if the stock exists
+    if (!$stock) {
+        return response()->json(['message' => __('Stock not found.')], 404);
+    }
 
-        // Check if a product with the same name already exists in the stock
-        $existingProduct =  $stock->produits()
-            ->where('nom', $request->nom)
-            ->where('code', $request->code)
-            ->first();
-        if ($existingProduct) {
-            return response()->json(['message' => __('A product with the same name and code already exists in this stock.')], 422);
-        }
+    // Check if a product with the same name already exists in the stock
+    $existingProduct = $stock->produits()
+        ->where('nom', $request->nom)
+        ->where('code', $request->code)
+        ->first();
+    if ($existingProduct) {
+        return response()->json(['message' => __('A product with the same name and code already exists in this stock.')], 422);
+    }
 
-        $product = Produit::where('nom', $request->nom)->first();
+    $product = Produit::where('nom', $request->nom)->first();
 
-        if (!$product) {
-            // The product is not found, create it
-            $product = Produit::create($request->all());
-        }
-
-        $product->quantite = 1;
+    if (!$product) {
+        // Create a new product with all required fields
+        $product = new Produit();
+        $product->nom = $request->nom;
+        $product->code = $request->code ?? ''; // Default empty string if null
+        $product->description = $request->description;
+        $product->prix = $request->prix;
+        $product->image = $request->image;
+        $product->expiry_date = $request->expiry_date;
+        $product->quantite = 1; // Default quantity
         $product->stock_id = $stock->id;
+        $product->categorie_id = $request->categorie_id ?? null;
+
+       /* // Handle image upload if present
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+            $product->image = $path;
+        }*/
 
         $product->save();
-
-
-        return response()->json(['message' => __('Product added to the stock successfully.')], 200);
+    } else {
+        $product->quantite = $product->quantite+1;
+        $product->save();
     }
+
+    return response()->json([
+        'message' => __('Product added to the stock successfully.'),
+        'product' => $product
+    ], 200);
+}
 
     // StockController.php
 
