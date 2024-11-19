@@ -150,19 +150,15 @@ class GroupeController extends Controller
     public function destroy($groupeId)
     {
         $groupe = Groupe::find($groupeId);
-
         // Delete the stocks associated with the group
         foreach ($groupe->stocks as $stock) {
             $stock->delete();
         }
-
         foreach ($groupe->members as $member) {
             $groupe->members()->detach($member->id);
         }
-
         // Delete the group
         $groupe->delete();
-
         return response()->json(null, 204);
     }
 
@@ -170,7 +166,6 @@ class GroupeController extends Controller
     {
         // Check if the stock belongs to the group
         if ($groupe->stocks->contains($stock)) {
-            // Delete the stock
             $stock->delete();
         }
 
@@ -217,16 +212,13 @@ class GroupeController extends Controller
             return response()->json(['message' => __('Stock not found or does not belong to the group.')], 404);
         }
 
-        // Check if a product with the same name already exists in the stock
-        $existingProduct = $stock->produits()->where('nom', $request->nom)->first();
-        if ($existingProduct && $existingProduct->id != $product->id) {
-            return response()->json(['message' => __('A product with the same name already exists in this stock.')], 422);
-        }
+        $existingProduct = $stock->produits()
+            ->where('nom', $request->nom)
+            ->where('code', $request->code)
+            ->first();
 
-        // Check if the product is in the stock
-        $productInStock = $stock->produits->contains($product->id);
-        if (!$productInStock) {
-            return response()->json(['message' => __('This product does not exist in this stock.')], 404);
+        if ($existingProduct) {
+            return response()->json(['message' => __('A product with the same name and code already exists in this stock.')], 422);
         }
 
         return response()->json(['message' => __('Product updated successfully.')], 200);
@@ -242,7 +234,7 @@ class GroupeController extends Controller
             return response()->json(['message' => __('Stock not found in this group.')], 404);
         }
 
-        $produit = $stock->produits()->where('produit_id', $product->id)->first();
+        $produit = $stock->produits()->find($product->id);
 
         if (!$produit) {
             return response()->json(['message' => __('Product not found in this stock.')], 404);
@@ -413,12 +405,7 @@ class GroupeController extends Controller
         if ($stock->groupe_id != $groupe->id) {
             return response()->json(['message' => __('This stock does not belong to this group.')], 404);
         }
-
-        // Check if the product is associated with the stock
-        if (!$stock->produits()->where('produit_id', $product->id)->exists()) {
-            return response()->json(['message' => __('This product does not exist in this stock.')], 404);
-        }
-
+        $product->delete();
         return response()->json(['message' => __('Product removed from the stock successfully.')], 200);
     }
 
@@ -441,12 +428,6 @@ class GroupeController extends Controller
             return response()->json(['message' => __('Stock not found or does not belong to the group.')], 404);
         }
 
-        // Check if the product is in the stock
-        $pivot = $stock->produits()->where('produit_id', $product->id)->first();
-
-        if (!$pivot) {
-            return response()->json(['message' => __('This product does not exist in this stock.')], 404);
-        }
         $product->quantite = $request->quantite;
 
         return response()->json(['message' => __('Product quantity updated successfully.')], 200);

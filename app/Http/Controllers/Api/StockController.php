@@ -27,7 +27,6 @@ class StockController extends Controller
             $stock->load('produits');
         }
 
-
         $stocks = $userStocks->unique('id');
 
         return response()->json($stocks->values());
@@ -256,11 +255,7 @@ class StockController extends Controller
             return response()->json(['message' => __('Stock not found.')], 404);
         }
 
-        $produit = $stock->produits()->where('produit_id', $product->id)->first();
-
-        if (!$produit) {
-            return response()->json(['message' => __('Product not found in this stock.')], 404);
-        }
+        $produit = Produit::findOrFail($product->id);
 
         return response()->json($produit);
     }
@@ -301,10 +296,6 @@ class StockController extends Controller
      */
     public function content(Stock $stock)
     {
-        if (!$stock) {
-            return response()->json(['message' => __('Stock not found.')], 404);
-        }
-
         return response()->json($stock->produits()->get());
     }
 }
