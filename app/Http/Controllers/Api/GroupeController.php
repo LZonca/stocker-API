@@ -265,6 +265,17 @@ class GroupeController extends Controller
         return response()->json(['message' => __('Stock added to the group successfully.')], 200);
     }
 
+    public function removeProductFromGroupStock(Stock $stock, Produit $produit)
+    {
+
+        if (!$stock->produits->contains($produit)) {
+            return response()->json(['message' => __('Product not found in this stock.')], 404);
+        }
+
+        $stock->produits()->delete($produit);
+        return response()->json(['message' => __('Product removed from the stock.')], 200);
+    }
+
     public function associateUser(Request $request, $groupeid)
     {
         $validator = Validator::make($request->all(), [

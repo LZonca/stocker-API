@@ -286,6 +286,8 @@ class StockController extends Controller
             return response()->json(['message' => __('Stock not found.')], 404);
         }
 
+        $product->delete();
+
         return response()->json(['message' => __('Product removed from the stock successfully.')], 200);
     }
 
