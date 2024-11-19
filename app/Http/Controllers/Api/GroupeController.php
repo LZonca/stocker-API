@@ -398,16 +398,6 @@ class GroupeController extends Controller
         ], 200);
     }
 
-    public function removeProductFromGroupStock(Groupe $groupe, Stock $stock, Produit $product)
-    {
-        // Check if the stock is associated with the group
-        if ($stock->groupe_id != $groupe->id) {
-            return response()->json(['message' => __('This stock does not belong to this group.')], 404);
-        }
-        $product->delete();
-        return response()->json(['message' => __('Product removed from the stock successfully.')], 200);
-    }
-
     public function updateProductQuantity(Request $request, Groupe $groupe, Stock $stock, Produit $product)
     {
         // Validate the request data
@@ -427,7 +417,7 @@ class GroupeController extends Controller
             return response()->json(['message' => __('Stock not found or does not belong to the group.')], 404);
         }
 
-        $product->update($request->quantite);
+        $product->update(['quantite' => $request->quantite]);
 
         return response()->json(['message' => __('Product quantity updated successfully.')], 200);
     }

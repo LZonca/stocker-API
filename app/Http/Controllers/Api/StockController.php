@@ -174,7 +174,8 @@ class StockController extends Controller
             return response()->json(['message' => __('Stock not found.')], 404);
         }
 
-        $product->update($request->quantite);
+        $product->update(['quantite' => $request->quantite]);
+
         return response()->json(['message' => __('Product quantity updated successfully.')], 200);
     }
 
