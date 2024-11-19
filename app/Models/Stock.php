@@ -16,7 +16,7 @@ class Stock extends Model
 
     public function produits()
     {
-        return $this->hasMany(Produit::class);
+        return $this->hasMany(Produit::class, 'stock_id');
     }
 
     public function proprietaire()

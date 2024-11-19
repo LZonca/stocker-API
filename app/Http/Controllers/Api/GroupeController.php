@@ -60,7 +60,7 @@ class GroupeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, Groupe $groupe)
+    public function show(Groupe $groupe)
     {
         $groupe->load('stocks.produits', 'members', 'proprietaire');
         return response()->json($groupe);

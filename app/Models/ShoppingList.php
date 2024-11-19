@@ -16,10 +16,4 @@ class ShoppingList extends Model
         return $this->belongsTo(Stock::class);
     }
 
-    public function userProduits()
-    {
-        return $this->belongsToMany(UserProduit::class, 'shopping_list_user_produit')
-            ->withPivot('quantity')
-            ->withTimestamps();
-    }
 }

@@ -29,10 +29,4 @@ class Produit extends Model
 
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->nom) . '&color=00000&background=6A8D73'; // &color=00000&background=6A8D73
     }
-
-    public function getQuantite()
-    {
-        $stock = $this->stocks()->first();
-        return $stock ? $stock->pivot->quantite : 'N/A';
-    }
 }

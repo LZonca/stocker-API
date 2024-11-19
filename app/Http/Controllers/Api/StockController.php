@@ -108,10 +108,12 @@ class StockController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Produit $produit)
+    public function show(Stock $stock)
     {
 
-        return response()->json($produit);
+        $stock->load('produits');
+
+        return response()->json($stock);
     }
 
     /**
@@ -278,12 +280,12 @@ class StockController extends Controller
     /**
      * Display the products of a user's stock.
      */
-    public function content(Request $request, Stock $stock)
+    public function content(Stock $stock)
     {
         if (!$stock) {
             return response()->json(['message' => __('Stock not found.')], 404);
         }
 
-        return response()->json($stock->produits());
+        return response()->json($stock->produits()->get());
     }
 }
