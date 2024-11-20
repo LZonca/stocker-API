@@ -1,17 +1,22 @@
-<div class="py-12">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+<div class="py-6">
+    <div class="max-w-7xl mx-auto">
         <div class="bg-white dark:bg-gray-900 overflow-hidden shadow-xl sm:rounded-lg">
             <div class="mt-6 text-gray-500">
                 <x-mary-header title="{{__('Logs')}}" subtitle="Check this on mobile">
                     <x-slot:middle class="!justify-end">
-                        <x-input icon="o-bolt" placeholder="Search..." />
+                        <x-mary-input wire:model.live="searchTerm" icon="zondicon.search" placeholder="Search..." />
                     </x-slot:middle>
                     <x-slot:actions>
-                        <x-mary-button icon="o-funnel" />
-                        <x-mary-button icon="o-plus" class="btn-primary" />
+                        <x-mary-button icon="eos.refresh" class="btn-primary" wire:click="refreshLogs" spinner="refreshLogs"/>
                     </x-slot:actions>
                 </x-mary-header>
                 <x-mary-table wire:model="selected" :headers="$headers" :rows="$logs" :sort-by="$sortBy" with-pagination class="text-gray-200 dark:text-gray-950 bg-transparent">
+                    @scope('cell_log_name', $log)
+                    <span class="text-gray-900 dark:text-gray-200">{{ ucfirst($log->log_name) }}</span>
+                    @endscope
+                    @scope('cell_description', $log)
+                    <span class="text-gray-900 dark:text-gray-200">{{ ucfirst($log->description) }}</span>
+                    @endscope
                     @scope('cell_subject_type', $log)
                     @php
                         $subjectType = str_contains($log->subject_type, 'App\Models') ? str_replace('App\Models\\', '',
