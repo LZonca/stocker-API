@@ -509,5 +509,15 @@
     "Properties": "Propriétés",
     "Category": "Catégories",
     "Subject": "Sujet",
-    "Date": "Date"
+    "Date": "Date",
+    "Deleted": "Suppression",
+    "Updated": "Mise à jour",
+    "Produits": "Produit",
+    "Produit": "Produit",
+    "Groupe": "Groupe",
+    "Woah, that is a lot of info, use the search bar to find what you are looking for !": "Woah, ça fait beaucoup, utilisez la barre de recherche pour trouver ce que vous cherchez !",
+    "Expiry Date": "Date de péremption",
+    "Quantity": "Quantité",
+    "Product name": "Nom du produit",
+    "Product description": "Description du produit"
 }

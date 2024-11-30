@@ -25,9 +25,10 @@
                                 </x-slot:sub-value>
                                 <x-slot:actions>
                                     <x-mary-dropdown>
-                                        <x-mary-menu-item title="Archive" icon="o-archive-box" />
-                                        <x-mary-menu-item title="Remove" icon="o-trash" />
-                                        <x-mary-menu-item title="Restore" icon="o-arrow-path" />
+                                        <x-mary-menu-item title="Edit" icon="fas.edit"
+                                                          wire:click="confirmEdit({{ $stock->id }})"/>
+                                        <x-mary-menu-item title="Remove" icon="o-trash"
+                                                          wire:click="confirmDelete({{ $stock->id }})"/>
                                     </x-mary-dropdown>
                                 </x-slot:actions>
                             </x-mary-list-item>
@@ -38,11 +39,30 @@
                 </div>
             </div>
             <x-mary-modal wire:model="seeCreateModal" title="{{ __('Create a new group') }}" class="text-gray-950 dark:text-gray-200" persistent>
-                <x-mary-form wire:submit="createGroup">
+                <x-mary-form wire:submit="createStock">
                     <x-mary-input wire:model="newStockName" label="{{__('Name')}}" inline/>
                     <x-slot:actions>
                         <x-mary-button wire:click="$toggle('seeCreateModal')" class="" label="{{__('Cancel')}}"/>
                         <x-mary-button wire:click="createStock" class="btn-primary" label="{{__('Create')}}"/>
+                    </x-slot:actions>
+                </x-mary-form>
+            </x-mary-modal>
+            <x-mary-modal wire:model="seeEditModal" title="{{ __('Edit Stock') }}"
+                          class="text-gray-950 dark:text-gray-200" persistent>
+                <x-mary-form wire:submit="editStock">
+                    <x-mary-input wire:model="editStockName" label="{{__('Name')}}" inline/>
+                    <x-slot:actions>
+                        <x-mary-button wire:click="$toggle('seeEditModal')" class="" label="{{__('Cancel')}}"/>
+                        <x-mary-button wire:click="editStock" class="btn-primary" label="{{__('Edit')}}"/>
+                    </x-slot:actions>
+                </x-mary-form>
+            </x-mary-modal>
+            <x-mary-modal wire:model="seeDeleteModal" title="{{ __('Are you sure you want to delete this stock ?') }}"
+                          class="text-gray-950 dark:text-gray-200" persistent>
+                <x-mary-form wire:submit.prevent="deleteStock">
+                    <x-slot:actions>
+                        <x-mary-button wire:click="$toggle('seeDeleteModal')" class="" label="{{__('Cancel')}}"/>
+                        <x-mary-button wire:click="deleteStock" class="btn-error" label="{{__('Delete')}}"/>
                     </x-slot:actions>
                 </x-mary-form>
             </x-mary-modal>

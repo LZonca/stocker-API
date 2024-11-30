@@ -2,7 +2,8 @@
     <div class="max-w-7xl mx-auto">
         <div class="bg-white dark:bg-gray-900 overflow-hidden shadow-xl sm:rounded-lg">
             <div class="mt-6 text-gray-500">
-                <x-mary-header title="{{__('Logs')}}" subtitle="Check this on mobile">
+                <x-mary-header title="{{__('Logs')}}"
+                               subtitle="{{ __('Woah, that is a lot of info, use the search bar to find what you are looking for !') }}">
                     <x-slot:middle class="!justify-end">
                         <x-mary-input wire:model.live="searchTerm" icon="zondicon.search" placeholder="Search..." />
                     </x-slot:middle>
@@ -12,10 +13,25 @@
                 </x-mary-header>
                 <x-mary-table wire:model="selected" :headers="$headers" :rows="$logs" :sort-by="$sortBy" with-pagination class="text-gray-200 dark:text-gray-950 bg-transparent">
                     @scope('cell_log_name', $log)
-                    <span class="text-gray-900 dark:text-gray-200">{{ ucfirst($log->log_name) }}</span>
+                    <span class="text-gray-900 dark:text-gray-200">{{__(ucfirst($log->log_name)) }}</span>
                     @endscope
                     @scope('cell_description', $log)
-                    <span class="text-gray-900 dark:text-gray-200">{{ ucfirst($log->description) }}</span>
+                    @switch($log->description)
+
+                        @case('created')
+                            <x-mary-icon name="fas.plus-circle"
+                                         class="text-green-600" {{--label="{{ __(ucfirst($log->description)) }}"--}} />
+                            @break
+                        @case('deleted')
+                            <x-mary-icon name="o-trash"
+                                         class="text-red-600" {{--label="{{ __(ucfirst($log->description)) }}"--}} />
+                            @break
+                        @case('updated')
+                            <x-mary-icon name="fas.edit" {{--label="{{ __(ucfirst($log->description)) }}"--}} />
+                            @break
+                        @default
+                            <x-mary-icon label="{{ __(ucfirst($log->description)) }}"/>
+                    @endswitch
                     @endscope
                     @scope('cell_subject_type', $log)
                     @php
@@ -26,16 +42,16 @@
                     @switch($subjectType)
 
                         @case('User')
-                            <x-mary-icon name="s-user" label="{{ $subjectType }}" />
+                            <x-mary-icon name="s-user" label="{{ __($subjectType) }}"/>
                             @break
                         @case('Produit')
-                            <x-mary-icon name="carbon.product" label="{{ $subjectType }}" />
+                            <x-mary-icon name="carbon.product" label="{{ __($subjectType) }}"/>
                             @break
                         @case('Groupe')
-                            <x-mary-icon name="gmdi.group-s" label="{{ $subjectType }}" />
+                            <x-mary-icon name="gmdi.group-s" label="{{ __($subjectType) }}"/>
                             @break
                         @case('Stock')
-                            <x-mary-icon name="vaadin.stock" label="{{ $subjectType }}" />
+                            <x-mary-icon name="vaadin.stock" label="{{ __($subjectType) }}"/>
                             @break
                         @default
                             <x-mary-icon name="fas.question" label="Unknown" />

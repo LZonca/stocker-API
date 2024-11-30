@@ -18,13 +18,13 @@ class LogsView extends Component
     public $selectedLog;
     public bool $seeModal = false;
     public array $selected = [];
-    public array $sortBy = ['column' => 'id', 'direction' => 'asc'];
+    public array $sortBy = ['column' => 'created_at', 'direction' => 'desc'];
 
     #[On('refreshedLogs')]
     public function mount(): void
     {
         $this->headers = [
-            ['key' => 'id', 'label' => '#', 'class' => 'w-1 text-gray-200'],
+            /*['key' => 'id', 'label' => '#', 'class' => 'w-1 text-gray-200'],*/
             ['key' => 'created_at', 'label' => 'Date', 'class' => 'text-gray-200'],
             ['key' => 'log_name', 'label' => __('Subject'), 'class' => 'text-gray-200'],
             ['key' => 'description', 'label' =>__( 'Description'), 'class' => 'text-gray-200'],
@@ -54,6 +54,7 @@ class LogsView extends Component
     {
         $this->dispatch('refreshedLogs');
     }
+
 
     public function render(): Application|Factory|View|\Illuminate\View\View
     {

@@ -35,9 +35,13 @@
             </div>
             <x-mary-modal wire:model="seeCreateModal" title="{{ __('Create a new product') }}" class="text-gray-950 dark:text-gray-200" persistent>
                 <x-mary-form wire:submit="createProduct">
-                    <x-mary-input wire:model="newProductName" label="Name" inline/>
-                    <x-mary-input wire:model="newProductDescription" label="Description" inline/>
-                    <x-mary-input wire:model="newProductCode" label="Code" inline/>
+                    <x-mary-input wire:model="newProductName" label="{{__('Name')}}" inline/>
+                    <x-mary-input wire:model="newProductDescription" label="{{__('Description')}}" inline/>
+                    <x-mary-input wire:model="newProductCode" label="{{__('Code')}}" inline/>
+                    <x-mary-input wire:model="newProductPrice" label="{{__('Price')}}" type="number" step="0.01"
+                                  inline/>
+                    <x-mary-input wire:model="newProductQuantity" label="{{__('Quantity')}}" type="number" inline/>
+                    <x-mary-input wire:model="newProductExpiryDate" label="{{__('Expiry Date')}}" type="date" inline/>
                     <x-slot:actions>
                         <x-mary-button wire:click="$toggle('seeCreateModal')" class="" label="{{__('Cancel')}}"/>
                         <x-mary-button wire:click="createProduct" class="btn-primary" label="{{__('Create')}}"/>

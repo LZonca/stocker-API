@@ -12,7 +12,7 @@ class Produit extends Model
     use HasFactory;
     use LogsActivity;
 
-    protected $fillable = ['stock_id', 'group_id', 'code', 'nom', 'description', 'prix', 'image', 'expiry_date', 'quantite', 'categorie_id'];
+    protected $fillable = ['stock_id', 'group_id', 'code', 'nom', 'description', 'prix', 'image', 'expiry_date', 'quantite', 'categorie_id', 'archived'];
 
     public function stock()
     {

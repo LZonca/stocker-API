@@ -9,6 +9,7 @@ use App\Models\Stock;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Spatie\Activitylog\Models\Activity;
 
 class GroupeController extends Controller
 {
@@ -297,7 +298,11 @@ class GroupeController extends Controller
 
         // Associate the user with the group
         $user->groupes()->attach($groupe->id);
-
+        Activity::causedBy($request->user())
+            ->useLogName('groupes')
+            ->performedOn($groupe)
+            ->description('User added to group')
+            ->log($user->email . ' added to group ' . $groupe->nom);
         return response()->json(['message' => __('User has been added to the group successfully!')], 200);
     }
 
@@ -324,6 +329,11 @@ class GroupeController extends Controller
         // Dissociate the user from the group
         $user->groupes()->detach($groupe);
 
+        Activity::causedBy($request->user())
+            ->useLogName('groupes')
+            ->performedOn($groupe)
+            ->description('User removed from group')
+            ->log($user->email . ' removed from group ' . $groupe->nom);
         return response()->json(['message' => __('User has been removed from the group.')], 200);
     }
 

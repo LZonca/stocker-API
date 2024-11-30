@@ -510,5 +510,15 @@
     "Properties": "Properties",
     "Category": "Category",
     "Subject": "Subject",
-    "Date": "Date"
+    "Date": "Date",
+    "Deleted": "Deletion",
+    "Updated": "Change",
+    "Produits": "Products",
+    "Produit": "Product",
+    "Groupe": "Group",
+    "Woah, that is a lot of info, use the search bar to find what you are looking for !": "Woah, that is a lot of info, use the search bar to find what you are looking for !",
+    "Expiry Date": "Expiry Date",
+    "Quantity": "Quantity",
+    "Product name": "Product name",
+    "Product description": "Product description"
 }
